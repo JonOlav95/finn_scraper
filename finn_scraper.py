@@ -1,14 +1,17 @@
 import os
+import random
 import math
 import re
 import time
 import pandas as pd
+import logging
 
 from datetime import datetime
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from load_selenium import load_driver
+from logger import init_logging
 from scrape_helpers import update_metadata
 
 
@@ -32,7 +35,6 @@ def store_other_ad(driver):
         try:
             content = job_ad.find_element(By.XPATH, value).text
         except:
-            print(f'could not find {key}')
             content = ''
 
         result_dict[key] = content
@@ -48,7 +50,6 @@ def store_other_ad(driver):
     source = source.find_element(By.XPATH, 'span[1]').text
     result_dict['source'] = source
 
-    print(result_dict['title'])
     return result_dict
 
 
@@ -84,8 +85,6 @@ def store_finn_ad(driver):
     except:
         result_dict['content_html'] = ''
 
-    print(result_dict['title'])
-
     return result_dict
 
 
@@ -114,6 +113,7 @@ def collect_ads(driver, filename, ads_list, urls, finn_ad=True):
         ad_link = first_a.get_attribute('href')
 
         if ad_link in urls:
+            logging.info(f'{ad_link} previously scraped.')
             continue
 
         urls.append(ad_link)
@@ -126,13 +126,14 @@ def collect_ads(driver, filename, ads_list, urls, finn_ad=True):
         else:
             ads_data = store_other_ad(driver)
 
+        logging.info(f"Scarped ad title '{ads_data['title']}'")
         ads_data = pd.DataFrame([ads_data])
         df = pd.concat([df, ads_data])
         df.to_csv(f'finn_ads/{filename}', index=False)
 
         driver.close()
         driver.switch_to.window(driver.window_handles[0])
-        time.sleep(1)
+        time.sleep(random.uniform(0.5, 1.5))
 
 
 def get_scraped_urls():
@@ -160,7 +161,11 @@ def main():
     curr_time = datetime.today().strftime('%Y_%m_%d-%H:%M')
     filename = f'finn_{curr_time}.csv'
 
+    init_logging(f'logs/finn_{curr_time}.log')
+    logging.info(f'Initiated scrape at {curr_time} under filename {filename}')
+
     urls = get_scraped_urls()
+
     driver = load_driver()
 
     driver.get("https://www.finn.no/job/fulltime/search.html?published=1")
@@ -171,6 +176,7 @@ def main():
     n_ads = int(re.search(r'(\d+)annonser', n_jobs_info).group(1))
 
     n_pages = int(math.ceil(n_ads / get_ads_per_page(driver)))
+    logging.info(f'{n_pages} pages to scrape.')
 
     for i in range(1, n_pages + 1):
         driver.get(f"https://www.finn.no/job/fulltime/search.html?page={i}&published=1")
@@ -189,12 +195,13 @@ def main():
             extra_ads = extra_ads.find_elements(By.TAG_NAME, "article")
             collect_ads(driver, filename, extra_ads, urls, finn_ad=False)
 
-        print('-' * 70)
-        print(f'Scraped page {i} out of {n_pages}')
-        print('-' * 70)
+        logging.info(f'Scraped page {i} out of {n_pages}')
 
 
 if __name__ == "__main__":
-    update_metadata()
-    main()
-    update_metadata()
+    try:
+        update_metadata()
+        main()
+        update_metadata()
+    except Exception as e:
+        logging.exception("main crashed. Error: %s", e)
