@@ -3,6 +3,9 @@ venv/
 finn_ads/
 logs/
 
+parameters.yml
+finn_metadata.yml
+
 __pycache__/
 .DS_Store
 .idea
