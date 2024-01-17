@@ -1,6 +1,7 @@
 old/
 venv/
-
+finn_ads/
+logs/
 
 __pycache__/
 .DS_Store
