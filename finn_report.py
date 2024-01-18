@@ -20,7 +20,7 @@ def main():
 
     # Sort the DataFrame by the 'datetime' column
     df['datetime'] = pd.to_datetime(df['datetime'], format='%Y_%m_%d-%H:%M')
-    df = df.sort_values(by='datetime')
+    df = df.sort_values(by='datetime', ascending=False)
 
     total_ads = df['n_ads'].sum()
     total_scrapes = len(df.index)
