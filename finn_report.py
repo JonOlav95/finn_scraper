@@ -34,7 +34,7 @@ def main():
         scrape[1] = scrape[1].strftime('%d-%b-%Y (%H:%M)')
         print(f'{scrape[0]}, {scrape[1]}, {scrape[2]}')
 
-    if len(df.index) > 10:
+    if total_scrapes > 10:
         print('...')
 
     mb_size = round(get_folder_size('finn_ads'))
