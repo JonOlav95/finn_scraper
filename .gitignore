@@ -4,7 +4,7 @@ finn_ads/
 logs/
 
 parameters.yml
-finn_metadata.yml
+finn_metadata.csv
 
 __pycache__/
 .DS_Store
