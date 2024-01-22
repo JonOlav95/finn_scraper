@@ -46,6 +46,7 @@ def get_mac_options(width=1472, height=828, headless=True) -> ChromeOptions:
     chrome_options.add_argument("--ignore-certificate-errors")
     chrome_options.add_argument("--remote-allow-origins=*")
 
+
     # Disable downloads
     chrome_options.add_experimental_option(
         'prefs', {
@@ -101,6 +102,6 @@ def load_driver():
         options = get_raspberry_options()
     else:
         service = None
-        options = get_mac_options(flags['headless'])
+        options = get_mac_options(headless=flags['headless'])
 
     return webdriver.Chrome(options=options, service=service)

@@ -1,8 +1,11 @@
 import os
+import random
 import re
+import time
 from datetime import datetime
 
 import pandas as pd
+import selenium.common.exceptions
 from selenium.webdriver.common.by import By
 
 from load_selenium import load_driver
@@ -24,21 +27,17 @@ def scrape_one(driver):
 
     result_dict = {
         'url': driver.current_url,
-        'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+        'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
+        'content_html': driver.page_source
     }
 
     for key, value in scrape_path.items():
         try:
             content = driver.find_element(By.XPATH, value).text
-        except:
+        except selenium.common.exceptions.NoSuchElementException:
             content = ''
 
         result_dict[key] = content
-
-    try:
-        result_dict['content_html'] = driver.page_source
-    except:
-        result_dict['content_html'] = ''
 
     return result_dict
 
@@ -54,14 +53,15 @@ def accept_cookie(driver):
 
 
 def save_result(filename, results):
-    if os.path.isfile(f'finn_ads/{filename}'):
-        df = pd.read_csv(f'finn_ads/{filename}')
+    if os.path.isfile(f'housing/{filename}'):
+        df = pd.read_csv(f'housing/{filename}')
     else:
         df = pd.DataFrame([])
 
     results_df = pd.DataFrame([results])
     df = pd.concat([df, results_df])
     df.to_csv(f'{filename}', index=False)
+    time.sleep(random.uniform(0.5, 1.5))
 
 
 def main():
@@ -83,17 +83,15 @@ def main():
         'abroad': f'{base_url}/abroad/{end_url}'
     }
 
-    curr_time = datetime.today().strftime('%Y_%m_%d-%H:%M')
-    filename = f'housing/housing_{curr_time}.csv'
+    filename = f'housing/housing_{datetime.today().strftime("%Y_%m_%d-%H:%M")}.csv'
 
     driver = load_driver()
     driver.get('https://www.finn.no/realestate/')
     accept_cookie(driver)
 
-    current_page = 1
-
-    while True:
-        driver.get(f'https://www.finn.no/realestate/homes/search.html?page={current_page}&published=1')
+    # Maximum is 50 pages.
+    for current_page in range(1, 50):
+        driver.get(f'{base_url}/homes/search.html?page={current_page}&published=1')
 
         all_urls = driver.find_elements(By.TAG_NAME, 'a')
         all_urls = [u.get_attribute('href') for u in all_urls]
@@ -102,13 +100,16 @@ def main():
         ad_urls = [u for u in all_urls if re.compile(r'finnkode=\d+').search(u) and 'homes' in u]
 
         for url in ad_urls:
-            driver.get(url)
+            driver.execute_script("window.open(arguments[0], '_blank');", url)
+            driver.switch_to.window(driver.window_handles[1])
+
             results = scrape_one(driver)
             save_result(filename, results)
 
-        current_page += 1
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
 
-        if f'https://www.finn.no/realestate/homes/search.html?page={current_page}&published=1' not in page_urls:
+        if f'https://www.finn.no/realestate/homes/search.html?page={current_page + 1}&published=1' not in page_urls:
             break
 
 
