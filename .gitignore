@@ -2,6 +2,7 @@ old/
 venv/
 finn_ads/
 logs/
+housing/
 
 parameters.yml
 finn_metadata.csv
