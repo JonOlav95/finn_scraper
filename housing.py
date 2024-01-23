@@ -2,42 +2,42 @@ import os
 import random
 import re
 import time
-from datetime import datetime
-
+import logging
 import pandas as pd
 import selenium.common.exceptions
-from selenium.webdriver.common.by import By
 
+from datetime import datetime
+from logger import init_logging
+from housing_xpaths import scraping_xpaths
 from load_selenium import load_driver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-def scrape_one(driver):
-    scrape_path = {
-        'title': '//section[@data-testid="object-title"]//h1',
-        'local_area_name': '//div[@data-testid="local-area-name"]',
-        'pricing_inciactive': '//div[@data-testid="pricing-incicative-price"]//span[2]',
-        'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-        'key_info': '//section[@data-testid="key-info"]//dl',
-        'facilities': '//section[@data-testid="object-facilities"]//div',
-        'about': '//div[@data-testid="om boligen"]//div',
-        'location': '//span[@data-testid="object-address"]'
-    }
+def scrape_one(driver, key):
+    xpaths = scraping_xpaths[key]
 
     result_dict = {
         'url': driver.current_url,
         'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
-        'content_html': driver.page_source
     }
 
-    for key, value in scrape_path.items():
+    if not xpaths:
+        result_dict['content_html'] = driver.find_element(By.TAG_NAME, "main").get_attribute("outerHTML")
+
+    for k, value in xpaths.items():
         try:
             content = driver.find_element(By.XPATH, value).text
         except selenium.common.exceptions.NoSuchElementException:
             content = ''
 
-        result_dict[key] = content
+        result_dict[k] = content
+
+    if 'title' in result_dict:
+        logging.info(f'{key} TITLE: {result_dict["title"]}')
+    else:
+        logging.info(f'{key} URL: {driver.current_url}')
 
     return result_dict
 
@@ -46,71 +46,119 @@ def accept_cookie(driver):
     try:
         WebDriverWait(driver, 3).until(
             EC.frame_to_be_available_and_switch_to_it((By.XPATH, '//*[@id="sp_message_iframe_987797"]')))
-        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//button[@title="Godta alle"]'))).click()
+        WebDriverWait(driver, 3).until(
+            EC.presence_of_element_located((By.XPATH, '//button[@title="Godta alle"]'))).click()
         driver.switch_to.parent_frame()
-    except:
-        return
+    except selenium.common.exceptions.TimeoutException:
+        logging.critical('Failed to accept cookie.')
 
 
-def save_result(filename, results):
-    if os.path.isfile(f'housing/{filename}'):
-        df = pd.read_csv(f'housing/{filename}')
-    else:
-        df = pd.DataFrame([])
+def construct_metadata():
+    metadata = []
 
-    results_df = pd.DataFrame([results])
-    df = pd.concat([df, results_df])
-    df.to_csv(f'{filename}', index=False)
-    time.sleep(random.uniform(0.5, 1.5))
+    for (dirpath, direnames, filenames) in os.walk('housing'):
+        for f in filenames:
+            df = pd.read_csv(f'{dirpath}/{f}')
+
+            n_ads = len(df.index)
+
+            if n_ads == 0:
+                os.remove(f'{dirpath}/{f}')
+                continue
+
+            date_and_time = re.search(r'(\d{4}_\d{2}_\d{2}-\d{2}:\d{2})', f)
+
+            if not date_and_time:
+                continue
+
+            parsed_datetime = datetime.strptime(date_and_time[0], '%Y_%m_%d-%H:%M')
+            parsed_datetime = parsed_datetime.strftime('%Y_%m_%d-%H:%M')
+
+            row = {
+                'filename': f,
+                'datetime': parsed_datetime,
+                'n_ads': n_ads
+            }
+
+            metadata.append(row)
+
+    metadata.sort(key=lambda x: x['datetime'])
+
+    return metadata
+
+
+def previously_scraped():
+    metadata = construct_metadata()
+    metadata = metadata[:30]
+    files = [d['filename'] for d in metadata]
+
+    if not files:
+        return []
+
+    previous_scrapes = pd.concat((pd.read_csv(f'housing/{f}') for f in files if os.path.isfile(f'housing/{f}')),
+                                 ignore_index=True)
+
+    scraped_urls = previous_scrapes['url'].to_list()
+
+    return scraped_urls
 
 
 def main():
+    scraped_urls = previously_scraped()
+
     base_url = 'https://www.finn.no/realestate'
-    end_url = 'search.html?page=1&published=1'
-
-    subsites = {
-        'homes': f'{base_url}/homes/{end_url}',
-        'newbuildings': f'{base_url}/newbuildings/{end_url}',
-        'plots': f'{base_url}/plots/{end_url}',
-        'leisuresale': f'{base_url}/leisuresale/{end_url}',
-        'leisureplots': f'{base_url}/leisureplots/{end_url}',
-        'lettings': f'{base_url}/lettings/{end_url}',
-        'wanted': f'{base_url}/wanted/{end_url}',
-        'businesssale': f'{base_url}/businesssale/{end_url}',
-        'businessrent': f'{base_url}/businessrent/{end_url}',
-        'businessplots': f'{base_url}/businessplots/{end_url}',
-        'companyforsale': f'{base_url}/companyforsale/{end_url}',
-        'abroad': f'{base_url}/abroad/{end_url}'
-    }
-
-    filename = f'housing/housing_{datetime.today().strftime("%Y_%m_%d-%H:%M")}.csv'
-
     driver = load_driver()
-    driver.get('https://www.finn.no/realestate/')
+    driver.get(base_url)
     accept_cookie(driver)
 
-    # Maximum is 50 pages.
-    for current_page in range(1, 50):
-        driver.get(f'{base_url}/homes/search.html?page={current_page}&published=1')
+    curr_time = datetime.today().strftime('%Y_%m_%d-%H:%M')
+    init_logging(f'logs/housing_{curr_time}.log')
 
-        all_urls = driver.find_elements(By.TAG_NAME, 'a')
-        all_urls = [u.get_attribute('href') for u in all_urls]
+    for key in scraping_xpaths.keys():
+        logging.info(f'STARTED SCRAPING {key}')
 
-        page_urls = [u for u in all_urls if re.compile(r'page=\d+').search(u) and 'homes' in u]
-        ad_urls = [u for u in all_urls if re.compile(r'finnkode=\d+').search(u) and 'homes' in u]
+        filename = f'housing/{key}_{curr_time}.csv'
 
-        for url in ad_urls:
-            driver.execute_script("window.open(arguments[0], '_blank');", url)
-            driver.switch_to.window(driver.window_handles[1])
+        if os.path.isfile(filename):
+            scrape_df = pd.read_csv(filename)
+        else:
+            scrape_df = pd.DataFrame([])
 
-            results = scrape_one(driver)
-            save_result(filename, results)
+        # Maximum is 50 pages.
+        for current_page in range(1, 50):
+            logging.info(f'Scraping page {current_page}')
 
-            driver.close()
-            driver.switch_to.window(driver.window_handles[0])
+            driver.get(f'{base_url}/{key}/search.html?page={current_page}&published=1')
 
-        if f'https://www.finn.no/realestate/homes/search.html?page={current_page + 1}&published=1' not in page_urls:
-            break
+            all_urls = driver.find_elements(By.TAG_NAME, 'a')
+            all_urls = [u.get_attribute('href') for u in all_urls]
+
+            page_urls = [u for u in all_urls if re.compile(r'page=\d+').search(u) and key in u]
+            ad_urls = [u for u in all_urls if re.compile(r'finnkode=\d+').search(u) and key in u]
+
+            for url in ad_urls:
+
+                if url in scraped_urls:
+                    logging.info(f'ALREADY SCRAPED: {url}')
+                    continue
+
+                driver.execute_script("window.open(arguments[0], '_blank');", url)
+                driver.switch_to.window(driver.window_handles[1])
+
+                results = scrape_one(driver, key)
+                results_df = pd.DataFrame([results])
+
+                scrape_df = pd.concat([scrape_df, results_df])
+                scrape_df.to_csv(filename, index=False)
+
+                driver.close()
+                driver.switch_to.window(driver.window_handles[0])
+
+                time.sleep(random.uniform(0.5, 1.5))
+
+            if f'https://www.finn.no/realestate/{key}/search.html?published=1&page={current_page + 1}' not in page_urls:
+                logging.info(f'FINISHED SCRAPING {key}.')
+                break
 
 
 if __name__ == "__main__":
