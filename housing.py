@@ -15,7 +15,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-def scrape_one(driver, key):
+def scrape_page(driver, key):
     xpaths = scraping_xpaths[key]
 
     result_dict = {
@@ -124,7 +124,7 @@ def main():
         else:
             scrape_df = pd.DataFrame([])
 
-        # Maximum is 50 pages.
+        # Iterate every page until the maximum of 50
         for current_page in range(1, 50):
             logging.info(f'Scraping page {current_page}')
 
@@ -136,6 +136,7 @@ def main():
             page_urls = [u for u in all_urls if re.compile(r'page=\d+').search(u) and key in u]
             ad_urls = [u for u in all_urls if re.compile(r'finnkode=\d+').search(u) and key in u]
 
+            # Scrape every ad url on the given page
             for url in ad_urls:
 
                 if url in scraped_urls:
@@ -145,7 +146,7 @@ def main():
                 driver.execute_script("window.open(arguments[0], '_blank');", url)
                 driver.switch_to.window(driver.window_handles[1])
 
-                results = scrape_one(driver, key)
+                results = scrape_page(driver, key)
                 results_df = pd.DataFrame([results])
 
                 scrape_df = pd.concat([scrape_df, results_df])
@@ -156,7 +157,7 @@ def main():
 
                 time.sleep(random.uniform(0.5, 1.5))
 
-            if f'https://www.finn.no/realestate/{key}/search.html?published=1&page={current_page + 1}' not in page_urls:
+            if f'{base_url}/{key}/search.html?published=1&page={current_page + 1}' not in page_urls:
                 logging.info(f'FINISHED SCRAPING {key}.')
                 break
 
