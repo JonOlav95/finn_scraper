@@ -8,7 +8,6 @@ import selenium.common.exceptions
 
 from datetime import datetime
 from logger import init_logging
-from housing_xpaths import scraping_xpaths
 from load_selenium import load_driver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
