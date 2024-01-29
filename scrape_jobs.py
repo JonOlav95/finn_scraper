@@ -12,7 +12,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from load_selenium import load_driver
 from logger import init_logging
-from scrape_helpers import update_metadata
 
 
 def store_other_ad(driver):
@@ -136,20 +135,49 @@ def collect_ads(driver, filename, ads_list, urls, finn_ad=True):
         time.sleep(random.uniform(0.5, 1.5))
 
 
-def get_scraped_urls():
-    metadata = pd.read_csv('finn_metadata.csv')
-    metadata['datetime'] = pd.to_datetime(metadata['datetime'], format='%Y_%m_%d-%H:%M')
-    metadata = metadata.sort_values(by='datetime', ascending=False)
-    metadata = metadata[metadata['n_ads'] > 0]
+def construct_metadata():
+    metadata = []
 
-    scrape_last_5 = metadata.head(10)
+    for (dirpath, direnames, filenames) in os.walk('finn_ads'):
+        for f in filenames:
+            df = pd.read_csv(f'{dirpath}/{f}')
 
-    filenames = scrape_last_5['filename']
+            n_ads = len(df.index)
 
-    if filenames.empty:
+            if n_ads == 0:
+                os.remove(f'{dirpath}/{f}')
+                continue
+
+            date_and_time = re.search(r'(\d{4}_\d{2}_\d{2}-\d{2}:\d{2})', f)
+
+            if not date_and_time:
+                continue
+
+            parsed_datetime = datetime.strptime(date_and_time[0], '%Y_%m_%d-%H:%M')
+            parsed_datetime = parsed_datetime.strftime('%Y_%m_%d-%H:%M')
+
+            row = {
+                'filename': f,
+                'datetime': parsed_datetime,
+                'n_ads': n_ads
+            }
+
+            metadata.append(row)
+
+    metadata.sort(key=lambda x: x['datetime'])
+
+    return metadata
+
+
+def previously_scraped():
+    metadata = construct_metadata()
+    metadata = metadata[:30]
+    files = [d['filename'] for d in metadata]
+
+    if not files:
         return []
 
-    previous_scrapes = pd.concat((pd.read_csv(f'finn_ads/{f}') for f in filenames if os.path.isfile(f'finn_ads/{f}')),
+    previous_scrapes = pd.concat((pd.read_csv(f'finn_ads/{f}') for f in files if os.path.isfile(f'finn_ads/{f}')),
                                  ignore_index=True)
 
     scraped_urls = previous_scrapes['url'].to_list()
@@ -164,7 +192,7 @@ def main():
     init_logging(f'logs/finn_{curr_time}.log')
     logging.info(f'Initiated scrape at {curr_time} under filename {filename}')
 
-    urls = get_scraped_urls()
+    urls = previously_scraped()
 
     driver = load_driver()
 
@@ -200,8 +228,6 @@ def main():
 
 if __name__ == "__main__":
     try:
-        update_metadata()
         main()
-        update_metadata()
     except Exception as e:
         logging.exception("main crashed. Error: %s", e)
