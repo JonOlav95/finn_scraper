@@ -10,12 +10,12 @@ from datetime import datetime
 
 from pandas.errors import EmptyDataError
 
-from logger import init_logging
-from housing_xpaths import load_xpaths, get_sub_urls
 from load_selenium import load_driver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+from scrape_helpers import get_sub_urls, load_xpaths, init_logging
 
 
 def scrape_page(driver, key, xpaths):
