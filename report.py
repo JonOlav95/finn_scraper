@@ -1,8 +1,6 @@
 import pandas as pd
 import os
 
-from scrape_helpers import update_metadata
-
 
 def get_folder_size(folder_path):
     total_size = 0
@@ -47,5 +45,4 @@ def main():
 
 
 if __name__ == "__main__":
-    update_metadata()
     main()

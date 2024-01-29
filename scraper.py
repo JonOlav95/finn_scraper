@@ -133,6 +133,8 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
         page_urls = [u for u in all_urls if re.compile(r'page=\d+').search(u) and sub_url in u]
         ad_urls = [u for u in all_urls if re.compile(r'finnkode=\d+').search(u)]
 
+        scraped_urls.extend(ad_urls)
+
         # Scrape every ad url on the given page
         for url in ad_urls:
             key = re.search(pattern, url).group(2)
