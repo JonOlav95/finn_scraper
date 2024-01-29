@@ -77,10 +77,10 @@ def load_xpaths():
             'keywords': "//*[contains(text(),'Nøkkelord')]/.."
         },
         'positions': {
-            'definition_1': "div[1]//dl[1]",
-            'title': "div[1]//h1[1]",
-            'content': "div[1]//section[1]",
-            'definition_2': "div[2]//dl[1]"
+            'definition_1': "//div[data-testid='aggregated-ad-object']//div[1]//dl[1]",
+            'title': "//div[data-testid='aggregated-ad-object']//div[1]//h1[1]",
+            'content': "//div[data-testid='aggregated-ad-object']//div[1]//section[1]",
+            'definition_2': "//div[data-testid='aggregated-ad-object']//div[2]//dl[1]"
         }
     }
 
@@ -88,7 +88,8 @@ def load_xpaths():
 def get_sub_urls():
     return [
         'job/fulltime',
-        'job/parttim/',
+        'job/parttime/',
+        'job/management/',
         'realestate/homes',
         'realestate/newbuildings',
         'realestate/plots',
