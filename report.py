@@ -1,47 +1,70 @@
+import re
+from datetime import datetime
+
 import pandas as pd
 import os
 
 
-def get_folder_size(folder_path):
-    total_size = 0
+def extract_datetime(filename):
+    # Assuming the datetime format is 'file_YYYY-MM-DD.txt'
+    date_str, time_str = filename.split('.')[0].split('-')
+    datetime_str = f"{date_str}_{time_str}"
+    return datetime.strptime(datetime_str, '%Y_%m_%d_%H:%M')
 
-    for dirpath, dirnames, filenames in os.walk(folder_path):
-        for filename in filenames:
-            filepath = os.path.join(dirpath, filename)
-            total_size += os.path.getsize(filepath)
 
-    return total_size / (1024 * 1024)
+def log_file_error(f):
 
+    with open(f'logs/{f}', 'r') as file:
+        for line_number, line in enumerate(file, start=1):
+            # Define your regular expression pattern
+            error_pattern = re.compile(r'(\| ERROR \|)')
+            critical_pattern = re.compile(r'(\| CRITICAL \|)')
+
+            # Use the pattern to search for matches in the line
+            if error_pattern.search(line) or critical_pattern.search(line):
+                print(f"FILE {f}\nError or Critical found in line {line_number}: {line.strip()}")
+                return
 
 def main():
-    df = pd.read_csv('finn_metadata.csv')
 
-    # Sort the DataFrame by the 'datetime' column
-    df['datetime'] = pd.to_datetime(df['datetime'], format='%Y_%m_%d-%H:%M')
-    df = df.sort_values(by='datetime', ascending=False)
+    log_files = os.listdir('logs')
+    log_files = sorted(log_files, key=extract_datetime)
+    log_files = log_files[-10:]
 
-    total_ads = df['n_ads'].sum()
-    total_scrapes = len(df.index)
+    for f in log_files:
+        log_file_error(f)
 
-    df = df.head(10)
 
-    print(f'Last {len(df.index)} scrapes:')
-    arr = df.values
+    folder_size = 0
+    n_scrapes = {}
 
-    for scrape in arr:
-        scrape[1] = scrape[1].strftime('%d-%b-%Y (%H:%M)')
-        print(f'{scrape[0]}, {scrape[1]}, {scrape[2]}')
+    scrape_files = os.listdir('scrapes')
 
-    if total_scrapes > 10:
-        print('...')
+    for filename in scrape_files:
+        filepath = f'scrapes/{filename}'
 
-    mb_size = round(get_folder_size('finn_ads'))
+        key = re.search(r'^([^_]+)', filename).group(1)
+        df = pd.read_csv(filepath)
+        n_lines = len(df.index)
 
-    print('-' * 51)
-    print(f'Number of scrape sessions: {total_scrapes}')
-    print(f'Number of adds scraped: {total_ads}')
+        if key not in n_scrapes:
+            n_scrapes[key] = n_lines
+        else:
+            n_scrapes[key] += n_lines
 
-    print(f'Scrape size: {mb_size} MB')
+        folder_size += os.path.getsize(filepath)
+
+    folder_size /= (1024 * 1024)
+    folder_size = round(folder_size)
+
+    print(f'SCRAPE FOLDER SIZE: {folder_size} MB\n')
+
+    n_scrapes['TOTAL'] = sum(n_scrapes.values())
+    max_key_length = max(len(str(key)) for key in n_scrapes.keys())
+
+    for key, value in n_scrapes.items():
+        print(f'{str(key).ljust(max_key_length)} = {value}')
+
 
 
 if __name__ == "__main__":
