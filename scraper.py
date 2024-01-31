@@ -137,6 +137,11 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
 
         # Scrape every ad url on the given page
         for url in ad_urls:
+
+            if url in scraped_urls:
+                logging.info(f'ALREADY SCRAPED: {url}')
+                continue
+
             key = re.search(pattern, url).group(2)
 
             if key in xpaths.keys():
@@ -152,10 +157,6 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
                 scrape_df = pd.read_csv(filename)
             else:
                 scrape_df = pd.DataFrame([])
-
-            if url in scraped_urls:
-                logging.info(f'ALREADY SCRAPED: {url}')
-                continue
 
             driver.execute_script("window.open(arguments[0], '_blank');", url)
             driver.switch_to.window(driver.window_handles[1])
