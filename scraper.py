@@ -174,7 +174,7 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
             filename = f'scrapes/{filename_key}_{curr_time}.csv'
             value_df = pd.DataFrame(value)
 
-            if os.path.isfile(filename_key):
+            if os.path.isfile(filename):
                 scrape_df = pd.read_csv(filename)
                 value_df = pd.concat([scrape_df, value_df])
 
