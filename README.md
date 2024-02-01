@@ -4,7 +4,7 @@
 - [ ] Optimize saving of dataframes for each page/batch instead of per row.
 - [ ] Automatic download files to keep space on the pi.
 - [ ] Check scraped urls by code instead of url
-- [ ] Xpath for others
+- [x] Xpath for others
 - [x] Remake generalized report
-- [x] More details im report e.g. by date
+- [ ] More details im report e.g. by date
 - [ ] Automatically merge files by day
