@@ -122,7 +122,7 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
     pattern = re.compile(r'finn\.no/(\w+)/(\w+)')
 
     # Iterate every page until the maximum of 50
-    for current_page in range(16, 50):
+    for current_page in range(1, 50):
         logging.info(f'Scraping page {current_page}')
 
         driver.get(f'{domain_url}/search.html?page={current_page}&published=1')
