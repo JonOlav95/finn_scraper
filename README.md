@@ -5,5 +5,6 @@
 - [ ] Automatic download files to keep space on the pi.
 - [ ] Check scraped urls by code instead of url
 - [ ] Xpath for others
-- [ ] Remake generalized report
+- [x] Remake generalized report
+- [x] More details im report e.g. by date
 - [ ] Automatically merge files by day

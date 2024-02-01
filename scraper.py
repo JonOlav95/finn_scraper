@@ -122,7 +122,7 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
     pattern = re.compile(r'finn\.no/(\w+)/(\w+)')
 
     # Iterate every page until the maximum of 50
-    for current_page in range(1, 50):
+    for current_page in range(16, 50):
         logging.info(f'Scraping page {current_page}')
 
         driver.get(f'{domain_url}/search.html?page={current_page}&published=1')
@@ -132,6 +132,8 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
 
         page_urls = [u for u in all_urls if re.compile(r'page=\d+').search(u) and sub_url in u]
         ad_urls = [u for u in all_urls if re.compile(r'finnkode=\d+').search(u)]
+
+        page_ads = {}
 
         # Scrape every ad url on the given page
         for url in ad_urls:
@@ -151,26 +153,33 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
                 key_xpaths = None
                 filename_key = 'other'
 
-            filename = f'scrapes/{filename_key}_{curr_time}.csv'
-
-            if os.path.isfile(filename):
-                scrape_df = pd.read_csv(filename)
-            else:
-                scrape_df = pd.DataFrame([])
-
             driver.execute_script("window.open(arguments[0], '_blank');", url)
             driver.switch_to.window(driver.window_handles[1])
 
             results = scrape_page(driver, key, key_xpaths)
-            results_df = pd.DataFrame([results])
-
-            scrape_df = pd.concat([scrape_df, results_df])
 
             driver.close()
             driver.switch_to.window(driver.window_handles[0])
 
-            scrape_df.to_csv(filename, index=False)
+            if filename_key in page_ads.keys():
+                page_ads[filename_key].append(results)
+            else:
+                page_ads[filename_key] = [results]
+
+
             time.sleep(random.uniform(0.5, 1.5))
+
+
+        for filename_key, value in page_ads.items():
+            filename = f'scrapes/{filename_key}_{curr_time}.csv'
+            value_df = pd.DataFrame(value)
+
+            if os.path.isfile(filename_key):
+                scrape_df = pd.read_csv(filename)
+                value_df = pd.concat([scrape_df, value_df])
+
+            value_df.to_csv(filename, index=False)
+
 
         if f'{domain_url}/search.html?published=1&page={current_page + 1}' not in page_urls:
             logging.info(f'FINISHED SCRAPING {sub_url}.')
