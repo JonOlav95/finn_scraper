@@ -3,6 +3,8 @@ venv/
 finn_ads/
 logs/
 housing/
+realestate/
+scrapes/
 
 parameters.yml
 finn_metadata.csv

@@ -12,28 +12,33 @@ def extract_datetime(filename):
     return datetime.strptime(datetime_str, '%Y_%m_%d_%H:%M')
 
 
-def log_file_error(f):
-
-    with open(f'logs/{f}', 'r') as file:
-        for line_number, line in enumerate(file, start=1):
-            # Define your regular expression pattern
-            error_pattern = re.compile(r'(\| ERROR \|)')
-            critical_pattern = re.compile(r'(\| CRITICAL \|)')
-
-            # Use the pattern to search for matches in the line
-            if error_pattern.search(line) or critical_pattern.search(line):
-                print(f"FILE {f}\nError or Critical found in line {line_number}: {line.strip()}")
-                return
-
-def main():
+def inspect_log_files(n_logs=10):
 
     log_files = os.listdir('logs')
     log_files = sorted(log_files, key=extract_datetime)
-    log_files = log_files[-10:]
+    log_files = log_files[-n_logs:]
+
+    errors_found = 0
 
     for f in log_files:
-        log_file_error(f)
+        with open(f'logs/{f}', 'r') as file:
+            for line_number, line in enumerate(file, start=1):
+                # Define your regular expression pattern
+                error_pattern = re.compile(r'(\| ERROR \|)')
+                critical_pattern = re.compile(r'(\| CRITICAL \|)')
 
+                # Use the pattern to search for matches in the line
+                if error_pattern.search(line) or critical_pattern.search(line):
+                    print(f"FILE {f}\nError or Critical found in line {line_number}: {line.strip()}")
+                    errors_found += 1
+
+    print(f"Found {errors_found} errors or criticals in the last {n_logs} log files.")
+
+
+def main():
+    print("-" * 70)
+    inspect_log_files()
+    print("-" * 70)
 
     folder_size = 0
     n_scrapes = {}

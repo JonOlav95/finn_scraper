@@ -88,8 +88,8 @@ def load_xpaths():
 def get_sub_urls():
     return [
         'job/fulltime',
-        'job/parttime/',
-        'job/management/',
+        'job/parttime',
+        'job/management',
         'realestate/homes',
         'realestate/newbuildings',
         'realestate/plots',
