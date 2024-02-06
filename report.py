@@ -35,17 +35,28 @@ def inspect_log_files(n_logs=10):
     print(f"Found {errors_found} errors or criticals in the last {n_logs} log files.")
 
 
-def main():
-    print("-" * 70)
-    inspect_log_files()
-    print("-" * 70)
+def inspect_latest_scrape(scrape_files):
 
-    folder_size = 0
+    dates = [re.search(r'(\d{4}_\d{2}_\d{2}-\d{2}:\d{2})', f) for f in scrape_files]
+    dates = [datetime.strptime(d[0], '%Y_%m_%d-%H:%M') for d in dates]
+
+    dates.sort(reverse=True)
+
+    newest_date_parsed = dates[0].strftime('%Y_%m_%d-%H:%M')
+
+    latest_scrapes = [re.search(fr'.+{newest_date_parsed}.+', f) for f in scrape_files]
+    latest_scrapes = [x[0] for x in latest_scrapes if x]
+
+    print(f'LAST SCRAPE ({newest_date_parsed})')
+    count_scrapes(latest_scrapes)
+
+    return
+
+
+def count_scrapes(filenames):
     n_scrapes = {}
 
-    scrape_files = os.listdir('scrapes')
-
-    for filename in scrape_files:
+    for filename in filenames:
         filepath = f'scrapes/{filename}'
 
         key = re.search(r'^([^_]+)', filename).group(1)
@@ -57,19 +68,37 @@ def main():
         else:
             n_scrapes[key] += n_lines
 
-        folder_size += os.path.getsize(filepath)
-
-    folder_size /= (1024 * 1024)
-    folder_size = round(folder_size)
-
-    print(f'SCRAPE FOLDER SIZE: {folder_size} MB\n')
-
     n_scrapes['TOTAL'] = sum(n_scrapes.values())
     max_key_length = max(len(str(key)) for key in n_scrapes.keys())
 
     for key, value in n_scrapes.items():
         print(f'{str(key).ljust(max_key_length)} = {value}')
 
+
+def main():
+    scrape_files = os.listdir('scrapes')
+
+    print("-" * 70)
+    inspect_log_files()
+    print("-" * 70)
+    inspect_latest_scrape(scrape_files)
+    print("-" * 70)
+    print("ALL SCRAPES")
+    count_scrapes(scrape_files)
+    print("-" * 70)
+
+
+    folder_size = 0
+
+    for filename in scrape_files:
+        filepath = f'scrapes/{filename}'
+        folder_size += os.path.getsize(filepath)
+
+    folder_size /= (1024 * 1024)
+    folder_size = round(folder_size)
+
+    print(f'SCRAPE FOLDER SIZE: {folder_size} MB')
+    print("-" * 70)
 
 
 if __name__ == "__main__":
