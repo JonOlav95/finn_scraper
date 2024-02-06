@@ -4,7 +4,8 @@
 - [x] Optimize saving of dataframes for each page/batch instead of per row.
 - [ ] Automatic download files to keep space on the pi.
 - [ ] Check scraped urls by code instead of url
-- [ ] Xpath for others
+- [x] Xpath for others
 - [x] Remake generalized report
 - [ ] More details im report e.g. by date
 - [ ] Automatically merge files by day
+- [ ] Click next page and scrape for units in e.g. new buildings. Currently only scrapes first page of table.
