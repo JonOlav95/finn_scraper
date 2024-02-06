@@ -37,7 +37,7 @@ def load_xpaths():
         'homes': {
             'title': '//section[@data-testid="object-title"]//h1',
             'local_area_name': '//div[@data-testid="local-area-name"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-incicative-price"]//span[2]',
+            'pricing_inciactive': '//div[@data-testid="pricing-incicative-price"]//span[2]', # Finn typo
             'pricing_details': '//section[@data-testid="pricing-details"]//dl',
             'key_info': '//section[@data-testid="key-info"]//dl',
             'facilities': '//section[@data-testid="object-facilities"]//div',
@@ -84,6 +84,16 @@ def load_xpaths():
             'about': '//h3[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
             'location': '//h3[@id="beliggenhet"]/following-sibling::div[1]'
         },
+        'leisuresale': {
+            'title': '//section[@data-testid="object-title"]//h1',
+            'local_area_name': '//div[@data-testid="local-area-name"]',
+            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]', # Finn no typo
+            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
+            'key_info': '//section[@data-testid="key-info"]//dl',
+            'facilities': '//section[@data-testid="object-facilities"]//div',
+            'about': '//section[@data-testid="about-property"]',
+            'location': '//span[@data-testid="object-address"]'
+        },
 
         'fulltime': {
             'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]",
@@ -117,13 +127,13 @@ def load_xpaths():
 
 def get_sub_urls():
     return [
+        'realestate/leisuresale',
         'realestate/newbuildings',
         'job/fulltime',
         'job/parttime',
         'job/management',
         'realestate/homes',
         'realestate/plots',
-        'realestate/leisuresale',
         'realestate/leisureplots',
         'realestate/lettings',
         'realestate/wanted',
