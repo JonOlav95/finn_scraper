@@ -54,6 +54,36 @@ def load_xpaths():
             'about': '//section[@data-testid="about-property"]',
             'location': '//span[@data-testid="object-address"]'
         },
+        'newbuildings': {
+            'title': '//h1[@class="mb-16 text-34"]',
+            'sub_title': '//h2[@class="mb-16 text-22"]',
+            'stpe': '//div[@class=" w-full flex"]',
+            'price': '//p[contains(text(), "Pris")]/following-sibling::p[1]',
+            'total_price': '//p[contains(text(), "Totalpris")]/following-sibling::p[1]',
+            'joint_debt': '//p[contains(text(), "Fellesgjeld")]/following-sibling::p[1]',
+            'local_area_name': '//svg[@alt="Beliggenhet ikon"]/following-sibling::p[1]',
+            'keywords': "//h3[contains(text(),'Nøkkelord') or contains(text(), 'Nøkkelinfo')]/following-sibling::div[1]",
+            'short_about': '//h3[contains(text(), "Kort om prosjektet")]/following-sibling::p[1]',
+            'facilities': '//h3[contains(text(),"Fasiliteter")]/following-sibling::div[1]',
+            'units_in_project': '//table[@class="w-full"]',
+            'about': '//h3[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
+            'location': '//h3[@id="beliggenhet"]/following-sibling::div[1]'
+        },
+        'nybygg': {
+            'title': '//h1[@class="mb-16 text-34"]',
+            'sub_title': '//h2[@class="mb-16 text-22"]',
+            'stpe': '//div[@class=" w-full flex"]',
+            'price': '//p[contains(text(), "Pris")]/following-sibling::p[1]',
+            'total_price': '//p[contains(text(), "Totalpris")]/following-sibling::p[1]',
+            'joint_debt': '//p[contains(text(), "Fellesgjeld")]/following-sibling::p[1]',
+            'local_area_name': '//svg[@alt="Beliggenhet ikon"]/following-sibling::p[1]',
+            'keywords': "//h3[contains(text(),'Nøkkelord') or contains(text(), 'Nøkkelinfo')]/following-sibling::div[1]",
+            'short_about': '//h3[contains(text(), "Kort om prosjektet")]/following-sibling::p[1]',
+            'facilities': '//h3[contains(text(),"Fasiliteter")]/following-sibling::div[1]',
+            'units_in_project': '//table[@class="w-full"]',
+            'about': '//h3[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
+            'location': '//h3[@id="beliggenhet"]/following-sibling::div[1]'
+        },
 
         'fulltime': {
             'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]",
@@ -87,11 +117,11 @@ def load_xpaths():
 
 def get_sub_urls():
     return [
+        'realestate/newbuildings',
         'job/fulltime',
         'job/parttime',
         'job/management',
         'realestate/homes',
-        'realestate/newbuildings',
         'realestate/plots',
         'realestate/leisuresale',
         'realestate/leisureplots',
