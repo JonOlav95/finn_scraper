@@ -7,19 +7,24 @@ import pandas as pd
 import selenium.common.exceptions
 
 from datetime import datetime
-
-from pandas.errors import EmptyDataError
-
 from load_selenium import load_driver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from scrape_helpers import get_sub_urls, load_xpaths, init_logging
+from helpers import get_sub_urls, load_xpaths, init_logging, extract_datetime
 
 
 def scrape_page(driver, key, xpaths):
+    """ Scrapes the page using selenium and spesifications from the key (ad type) and the corresponding xpaths.
 
+    If the xpath config is not present for the given key, the HTML code is downloaded instead.
+
+    :param driver: Selenium webdriver.
+    :param key: The key, or ad type, which informs which type of ad the page consists of.
+    :param xpaths: Dictionary pointing to the xpaths given the ad type. None if the xpath is not set for the ad type.
+    :return: The scraped data as dictionary. The keys of the dictionary depends on the ad type.
+    """
     result_dict = {
         'url': driver.current_url,
         'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
@@ -46,6 +51,7 @@ def scrape_page(driver, key, xpaths):
 
 
 def accept_cookie(driver):
+    """When scraping housing, accepting a cookie is required at the initial link."""
 
     # Trigger cookie
     driver.get('https://www.finn.no/realestate/homes/search.html?published=1')
@@ -60,56 +66,42 @@ def accept_cookie(driver):
         logging.critical('Failed to accept cookie.')
 
 
-def construct_metadata(folder):
+def previously_scraped():
+    dirpath = 'scrapes'
+    n_files = 30
+
     metadata = []
 
-    for (dirpath, direnames, filenames) in os.walk(folder):
-        for f in filenames:
+    filenames = os.listdir(dirpath)
+    filenames = sorted(filenames, key=extract_datetime)
+    filenames = filenames[-n_files:]
 
-            try:
-                df = pd.read_csv(f'{dirpath}/{f}')
-            except EmptyDataError:
-                continue
+    for f in filenames:
 
-            n_ads = len(df.index)
+        with open(f'{dirpath}/{f}') as file:
+            n_ads = sum(1 for _ in file)
 
-            if n_ads == 0:
-                os.remove(f'{dirpath}/{f}')
-                continue
+        if n_ads == 0:
+            os.remove(f'{dirpath}/{f}')
+            continue
 
-            date_and_time = re.search(r'(\d{4}_\d{2}_\d{2}-\d{2}:\d{2})', f)
+        row = {
+            'filename': f,
+            'datetime': extract_datetime(f),
+            'n_ads': n_ads
+        }
 
-            if not date_and_time:
-                continue
+        metadata.append(row)
 
-            parsed_datetime = datetime.strptime(date_and_time[0], '%Y_%m_%d-%H:%M')
-            parsed_datetime = parsed_datetime.strftime('%Y_%m_%d-%H:%M')
-
-            row = {
-                'filename': f,
-                'datetime': parsed_datetime,
-                'n_ads': n_ads
-            }
-
-            metadata.append(row)
-
-    metadata.sort(key=lambda x: x['datetime'])
-
-    return metadata
-
-
-def previously_scraped():
-    folder = 'scrapes'
-
-    metadata = construct_metadata(folder)
-    metadata = metadata[:30]
-    files = [d['filename'] for d in metadata]
-
-    if not files:
+    # No previous scrapes
+    if not metadata:
         return []
 
-    previous_scrapes = pd.concat((pd.read_csv(f'{folder}/{f}') for f in files if os.path.isfile(f'{folder}/{f}')),
-                                 ignore_index=True)
+    files = [d['filename'] for d in metadata]
+
+    previous_scrapes = pd.concat(
+        (pd.read_csv(f'{dirpath}/{f}') for f in files if os.path.isfile(f'{dirpath}/{f}')),
+        ignore_index=True)
 
     scraped_urls = previous_scrapes['url'].to_list()
 
@@ -117,7 +109,17 @@ def previously_scraped():
 
 
 def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
+    """ Scrape a subdomain. This can for example be finn.com/housing/homes. Though the subdomain in the
+    example is homes, other keys can be present on the page, such as newbuildings.
 
+    The function scrapes through all ads which has been uploaded within 24 hours.
+
+    :param driver: Selenium web driver.
+    :param curr_time: Time and the intiation of the process. Used for filenames.
+    :param sub_url: The current sub url which is being scraped. E.g. /homes, /fulltime.
+    :param scraped_urls: List of previously scraped URLs to reduce repeat scrapes.
+    :param xpaths: Xpath spesifications for the different type of ads.
+    """
     domain_url = BASE_URL + sub_url
     pattern = re.compile(r'finn\.no/(\w+)/(\w+)')
 
@@ -135,7 +137,10 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
 
         page_ads = {}
 
-        # Scrape every ad url on the given page
+        # Scrape every ad url on the given page.
+        # Scraping is done by opening up the ad in a new tab, then downloading the data.
+        # The tab is then closed, and selenium returns to the initial page tab without
+        # making a new request.
         for url in ad_urls:
 
             if url in scraped_urls:
@@ -170,6 +175,7 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
             time.sleep(random.uniform(0.5, 1.5))
 
 
+        # Write the scraped data to CSV files corresponding to their ad type.
         for filename_key, value in page_ads.items():
             filename = f'scrapes/{filename_key}_{curr_time}.csv'
             value_df = pd.DataFrame(value)
@@ -197,6 +203,7 @@ def main():
 
     init_logging(f'logs/{curr_time}.log')
 
+    # Iterate the different subdomains used to scrape the daily ads
     for sub_url in sub_urls:
         logging.info(f'SCRAPING DOMAIN: {sub_url}')
         scraped_urls = previously_scraped()

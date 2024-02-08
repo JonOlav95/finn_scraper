@@ -1,8 +1,19 @@
 import logging
 import os
+import re
 import sys
+from datetime import datetime
 
 import yaml
+
+
+def extract_datetime(filename):
+    date_and_time = re.search(r'(\d{4}_\d{2}_\d{2}-\d{2}:\d{2})', filename)
+    parsed_datetime = datetime.strptime(date_and_time[0], '%Y_%m_%d-%H:%M')
+    parsed_datetime = parsed_datetime.strftime('%Y_%m_%d-%H:%M')
+
+    return parsed_datetime
+
 
 
 def init_logging(filename):

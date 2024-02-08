@@ -4,16 +4,10 @@ from datetime import datetime
 import pandas as pd
 import os
 
-
-def extract_datetime(filename):
-    # Assuming the datetime format is 'file_YYYY-MM-DD.txt'
-    date_str, time_str = filename.split('.')[0].split('-')
-    datetime_str = f"{date_str}_{time_str}"
-    return datetime.strptime(datetime_str, '%Y_%m_%d_%H:%M')
+from helpers import extract_datetime
 
 
 def inspect_log_files(n_logs=10):
-
     log_files = os.listdir('logs')
     log_files = sorted(log_files, key=extract_datetime)
     log_files = log_files[-n_logs:]

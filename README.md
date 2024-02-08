@@ -6,6 +6,6 @@
 - [ ] Check scraped urls by code instead of url
 - [x] Xpath for others
 - [x] Remake generalized report
-- [ ] More details im report e.g. by date
+- [x] More details im report e.g. by date
 - [ ] Automatically merge files by day
 - [ ] Click next page and scrape for units in e.g. new buildings. Currently only scrapes first page of table.
