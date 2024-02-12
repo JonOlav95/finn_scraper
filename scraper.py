@@ -193,15 +193,15 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
 
 
 def main():
+    curr_time = datetime.today().strftime('%Y_%m_%d-%H:%M')
+    init_logging(f'logs/{curr_time}.log')
+
     driver = load_driver()
     driver.get(BASE_URL)
     accept_cookie(driver)
 
     xpaths = load_xpaths()
     sub_urls = get_sub_urls()
-    curr_time = datetime.today().strftime('%Y_%m_%d-%H:%M')
-
-    init_logging(f'logs/{curr_time}.log')
 
     # Iterate the different subdomains used to scrape the daily ads
     for sub_url in sub_urls:
