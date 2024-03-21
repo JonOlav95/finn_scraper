@@ -58,7 +58,7 @@ def accept_cookie(driver):
 
     try:
         WebDriverWait(driver, 3).until(
-            EC.frame_to_be_available_and_switch_to_it((By.XPATH, '//*[@id="sp_message_iframe_987797"]')))
+            EC.frame_to_be_available_and_switch_to_it((By.XPATH, '//*[@title="SP Consent Message"]')))
         WebDriverWait(driver, 3).until(
             EC.presence_of_element_located((By.XPATH, '//button[@title="Godta alle"]'))).click()
         driver.switch_to.parent_frame()
@@ -193,7 +193,7 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
 
 
 def main():
-    curr_time = datetime.today().strftime('%Y_%m_%d-%H:%M')
+    curr_time = datetime.today().strftime('%Y_%m_%d-%H_%M')
     init_logging(f'logs/{curr_time}.log')
 
     driver = load_driver()

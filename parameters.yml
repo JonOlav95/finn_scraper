@@ -1,2 +1,2 @@
 raspberry: False
-headless: False
+headless: True
