@@ -5,7 +5,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import selenium.common.exceptions
 
+import time
 import re
+import pandas as pd
+import os
 
 
 def scrape_nav_page(driver):
@@ -14,7 +17,7 @@ def scrape_nav_page(driver):
         'location': '/html/body/div/div/main/div/article/div/div[1]/section[1]/div[2]/p',
         'company': '/html/body/div/div/main/div/article/div/div[1]/section[1]/div[1]/p',
         'content': '/html/body/div/div/main/div/article/div/div[1]/div',
-        'empolyer': '//h2[contains(text(), "Om arbeidsgiveren")]/..', #html,
+        'employer': '//h2[contains(text(), "Om arbeidsgiveren")]/..', #html,
         'about': '//h2[contains(text(), "Om stillingen")]/..',
         'deadline': '/html/body/div/div/main/div/article/div/div[2]/div/dl/dd/p',
         'source': '/html/body/div/div/main/div/article/div/div[2]/div/div'
@@ -34,26 +37,44 @@ def scrape_nav_page(driver):
         result_dict[k] = content
 
 
+    print(result_dict["title"])
     return result_dict
 
 
 def main():
 
     driver = load_driver()
+    curr_time = datetime.today().strftime('%Y_%m_%d-%H_%M')
 
-    driver.get('https://arbeidsplassen.nav.no/stillinger?published=now%2Fd')
+    page = 0
 
-    all_urls = driver.find_elements(By.TAG_NAME, 'a')
-    all_urls = [u.get_attribute('href') for u in all_urls]
+    while True:
+        driver.get(f'https://arbeidsplassen.nav.no/stillinger?from={page * 25}&published=now%2Fd')
 
-    ad_urls = [u for u in all_urls if re.compile(r'(\/stillinger\/stilling\/.+)').search(u)]
+        all_urls = driver.find_elements(By.TAG_NAME, 'a')
+        all_urls = [u.get_attribute('href') for u in all_urls]
 
-    print(ad_urls)
+        ad_urls = [u for u in all_urls if re.compile(r'(\/stillinger\/stilling\/.+)').search(u)]
 
-    for url in ad_urls:
-        driver.get(url)
-        result = scrape_nav_page(driver)
+        if not ad_urls:
+            break
 
+        for url in ad_urls:
+            driver.get(url)
+            result = scrape_nav_page(driver)
+
+            value_df = pd.DataFrame([result])
+
+            filename = f'nav/{curr_time}.csv'
+
+            if os.path.isfile(filename):
+                scrape_df = pd.read_csv(filename, encoding='utf-8')
+                value_df = pd.concat([scrape_df, value_df])
+
+            value_df.to_csv(filename, index=False, encoding='utf-8')
+
+        print(f'Finished scraping page {page}')
+        page += 1
 
 
 if __name__ == "__main__":

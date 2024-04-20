@@ -48,10 +48,30 @@ def load_flags():
 
 
 def load_xpaths():
+
+    default_housing = {
+        'title': '//section[@data-testid="object-title"]//h1',
+        'local_area_name': '//div[@data-testid="local-area-name"]',
+        'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]', # Finn no typo
+        'pricing_details': '//section[@data-testid="pricing-details"]//dl',
+        'key_info': '//section[@data-testid="key-info"]//dl',
+        'facilities': '//section[@data-testid="object-facilities"]//div',
+        'about': '//section[@data-testid="about-property"]',
+        'location': '//span[@data-testid="object-address"]'
+        }
+    
+    default_work = {
+        'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]",
+        'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]",
+        'content': "//div[@class='import-decoration']",
+        'definition_2': "//dl[@class='definition-list definition-list--inline']",
+        'keywords': "//*[contains(text(),'Nøkkelord')]/following-sibling::*"
+    }
+
     return {
         'homes': {
             'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//div[@data-testid="local-area-name"]',
+            'local_area_name': '//span[@data-testid="object-address"]',
             'pricing_inciactive': '//div[@data-testid="pricing-incicative-price"]//span[2]', # Finn typo
             'pricing_details': '//section[@data-testid="pricing-details"]//dl',
             'key_info': '//section[@data-testid="key-info"]//dl',
@@ -99,115 +119,20 @@ def load_xpaths():
             'about': '//h3[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
             'location': '//h3[@id="beliggenhet"]/following-sibling::div[1]'
         },
-        'leisuresale': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//div[@data-testid="local-area-name"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]', # Finn no typo
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]'
-        },
 
-        'abroad': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//div[@data-testid="local-area-name"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',  # Finn no typo
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]'
-        },
+        'leisuresale': default_housing,
+        'abroad': default_housing,
+        'plots': default_housing,
+        'wanted': default_housing,
+        'businesssale': default_housing,
+        'businessrent': default_housing,
+        'businessplots': default_housing,
+        'companyforsale': default_housing,
 
-        'plots': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//div[@data-testid="local-area-name"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',  # Finn no typo
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]'
-        },
-
-        'wanted': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'pricing_inciactive': '//div[@data-testid="letting-wanted-price"]',  # Finn no typo
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'region_info': '//section[@data-testid="region-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]'
-        },
-
-        'businesssale': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//div[@data-testid="local-area-name"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',  # Finn no typo
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]'
-        },
-
-        'businessrent': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//div[@data-testid="local-area-name"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',  # Finn no typo
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]'
-        },
-
-        'businessplots': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//div[@data-testid="local-area-name"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',  # Finn no typo
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]'
-        },
-
-        'companyforsale': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//div[@data-testid="local-area-name"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',  # Finn no typo
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]'
-        },
-
-        'fulltime': {
-            'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]",
-            'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]",
-            'content': "//div[@class='import-decoration']",
-            'definition_2': "//dl[@class='definition-list definition-list--inline']",
-            'keywords': "//*[contains(text(),'Nøkkelord')]/.."
-        },
-        'management': {
-            'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]",
-            'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]",
-            'content': "//div[@class='import-decoration']",
-            'definition_2': "//dl[@class='definition-list definition-list--inline']",
-            'keywords': "//*[contains(text(),'Nøkkelord')]/.."
-        },
-        'parttime': {
-            'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]",
-            'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]",
-            'content': "//div[@class='import-decoration']",
-            'definition_2': "//dl[@class='definition-list definition-list--inline']",
-            'keywords': "//*[contains(text(),'Nøkkelord')]/.."
-        },
+        'fulltime': default_work,
+        'management': default_work,
+        'parttime': default_work,
+        
         'positions': {
             'definition_1': "//div[@data-testid='aggregated-ad-object']//div[1]//dl[1]",
             'title': "//div[@data-testid='aggregated-ad-object']//div[1]//h1[1]",
@@ -219,10 +144,10 @@ def load_xpaths():
 
 def get_sub_urls():
     return [
+        'realestate/homes',
         'job/fulltime',
         'job/parttime',
         'job/management',
-        'realestate/homes',
         'realestate/plots',
         'realestate/leisureplots',
         'realestate/lettings',
