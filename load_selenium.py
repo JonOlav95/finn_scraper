@@ -8,7 +8,7 @@ from helpers import load_flags
 from random import choice
 
 
-def get_mac_options(width=1472, height=828, headless=True) -> ChromeOptions:
+def get_pc_options(width=1472, height=828, headless=True) -> ChromeOptions:
     """
     Generate default Chrome driver options
     :param width: int
@@ -102,6 +102,6 @@ def load_driver():
         options = get_raspberry_options()
     else:
         service = None
-        options = get_mac_options(headless=flags['headless'])
+        options = get_pc_options(headless=flags['headless'])
 
     return webdriver.Chrome(options=options, service=service)

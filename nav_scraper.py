@@ -1,26 +1,27 @@
+import re
+import os
+import pandas as pd
+
+import selenium.common.exceptions
+
 from datetime import datetime
 from load_selenium import load_driver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import selenium.common.exceptions
-
-import time
-import re
-import pandas as pd
-import os
 
 
 def scrape_nav_page(driver):
     xpaths = {
-        'title': '/html/body/div/div/main/div/article/div/div[1]/h1',
-        'location': '/html/body/div/div/main/div/article/div/div[1]/section[1]/div[2]/p',
-        'company': '/html/body/div/div/main/div/article/div/div[1]/section[1]/div[1]/p',
-        'content': '/html/body/div/div/main/div/article/div/div[1]/div',
-        'employer': '//h2[contains(text(), "Om arbeidsgiveren")]/..', #html,
-        'about': '//h2[contains(text(), "Om stillingen")]/..',
+        'title': '//*[@id="main-content"]/article/h1',
+        'company': '//*[@id="main-content"]/article/section[1]/div[1]/p',
+        'location': '//*[@id="main-content"]/article/section[1]/div[2]/p',
+        'content': '//*[@id="main-content"]/article/section[2]',
+        'about': '//h2[contains(text(), "Om jobben")]/..',
+        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen")]/..',
+        'employer': '//h2[contains(text(), "Om bedriften")]/..',
+        'ad_data': '//h2[contains(text(), "Annonsedata")]/..',
         'deadline': '/html/body/div/div/main/div/article/div/div[2]/div/dl/dd/p',
-        'source': '/html/body/div/div/main/div/article/div/div[2]/div/div'
+        'source': '/html/body/div/div/main/div/article/div/div[2]/div/div',
+        'tmp': '//h2[contains(text(), "Om jobben")]/../../dl[1]'
     }
 
     result_dict = {

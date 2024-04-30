@@ -1,10 +1,12 @@
 old/
 venv/
+.venv/
 finn_ads/
 logs/
 housing/
 realestate/
 scrapes/
+nav/
 
 parameters.yml
 finn_metadata.csv
