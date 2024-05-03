@@ -14,7 +14,7 @@ from helpers import get_sub_urls, load_xpath, init_logging, extract_datetime
 
 def scrape_page(key, xpaths, url, finn_code):
 
-    r = requests.get(url)
+    r = requests.get(url, headers=headers)
     tree = etree.HTML(r.text)
         
     result_dict = {
@@ -66,7 +66,7 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
     for current_page in range(1, 50):
         logging.info(f'Scraping page {current_page}')
 
-        r = requests.get(f'{domain_url}/search.html?page={current_page}&published=1')
+        r = requests.get(f'{domain_url}/search.html?page={current_page}&published=1', headers=headers)
 
         html_content = r.text
 

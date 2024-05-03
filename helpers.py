@@ -53,17 +53,19 @@ def load_xpath(key):
     default_housing = {
         "text": {
             'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//div[@data-testid="local-area-name"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]', 
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
+            'local_area_name': '//span[@data-testid="object-address"]',
+            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',
             'about': '//section[@data-testid="about-property"]',
             'location': '//span[@data-testid="object-address"]'
         },
         "html": {
+            'cadastreinfo_part': '//h2[@id="cadastreinfo-part"]/following-sibling::div[1]',
+            'key_info': '//section[@data-testid="key-info"]//dl',
+            'facilities': '//section[@data-testid="object-facilities"]//div',
+            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
         }
-    }
+    },
+
 
     default_work = {
         "text": {
@@ -104,13 +106,14 @@ def load_xpath(key):
                 'title': '//section[@data-testid="object-title"]//h1',
                 'local_area_name': '//span[@data-testid="object-address"]',
                 'pricing_inciactive': '//div[@data-testid="pricing-incicative-price"]//span[2]', # Finn typo
-                'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-                'key_info': '//section[@data-testid="key-info"]//dl',
-                'facilities': '//section[@data-testid="object-facilities"]//div',
                 'about': '//section[@data-testid="about-property"]',
                 'location': '//span[@data-testid="object-address"]'
             },
             "html": {
+                'cadastreinfo_part': '//h2[@id="cadastreinfo-part"]/following-sibling::div[1]',
+                'key_info': '//section[@data-testid="key-info"]//dl',
+                'facilities': '//section[@data-testid="object-facilities"]//div',
+                'pricing_details': '//section[@data-testid="pricing-details"]//dl',
             }
         },
 
@@ -167,12 +170,13 @@ def load_xpath(key):
 
 def get_sub_urls():
     return [
+        'realestate/homes',
         'job/fulltime',
         'job/parttime',
         'job/management',
-        'realestate/homes',
-        'realestate/newbuildings',
 
+        'realestate/newbuildings',
+        
         'realestate/plots',
         'realestate/leisureplots',
         'realestate/lettings',
