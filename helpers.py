@@ -2,9 +2,9 @@ import logging
 import os
 import re
 import sys
-from datetime import datetime
-
 import yaml
+
+from datetime import datetime
 
 
 def extract_datetime(filename):
@@ -14,7 +14,7 @@ def extract_datetime(filename):
         return None
     
     parsed_datetime = datetime.strptime(date_and_time[0], '%Y_%m_%d_%H_%M')
-    parsed_datetime = parsed_datetime.strftime('%Y_%m_%d-%H_%M')
+    parsed_datetime = parsed_datetime.strftime('%Y_%m_%d_%H_%M')
 
     return parsed_datetime
 

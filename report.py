@@ -31,12 +31,12 @@ def inspect_log_files(n_logs=10):
 
 def inspect_latest_scrape(scrape_files):
 
-    dates = [re.search(r'(\d{4}_\d{2}_\d{2}-\d{2}_\d{2})', f) for f in scrape_files]
-    dates = [datetime.strptime(d[0], '%Y_%m_%d-%H:%M') for d in dates]
+    dates = [re.search(r'(\d{4}_\d{2}_\d{2}_\d{2}_\d{2})', f) for f in scrape_files]
+    dates = [datetime.strptime(d[0], '%Y_%m_%d_%H_%M') for d in dates]
 
     dates.sort(reverse=True)
 
-    newest_date_parsed = dates[0].strftime('%Y_%m_%d-%H_%M')
+    newest_date_parsed = dates[0].strftime('%Y_%m_%d_%H_%M')
 
     latest_scrapes = [re.search(fr'.+{newest_date_parsed}.+', f) for f in scrape_files]
     latest_scrapes = [x[0] for x in latest_scrapes if x]

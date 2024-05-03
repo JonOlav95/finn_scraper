@@ -4,66 +4,60 @@ import re
 import time
 import logging
 import pandas as pd
-import selenium.common.exceptions
+import requests
 
 from datetime import datetime
-from load_selenium import load_driver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-from helpers import get_sub_urls, load_xpaths, init_logging, extract_datetime
+from lxml import etree
+from bs4 import BeautifulSoup
+from helpers import get_sub_urls, load_xpath, init_logging, extract_datetime
 
 
-def scrape_page(driver, key, xpaths):
-    """ Scrapes the page using selenium and spesifications from the key (ad type) and the corresponding xpaths.
+def scrape_page(key, xpaths, url):
 
-    If the xpath config is not present for the given key, the HTML code is downloaded instead.
+    code = re.compile(r'(?<=finnkode=)\d+').search(url).group(0)
 
-    :param driver: Selenium webdriver.
-    :param key: The key, or ad type, which informs which type of ad the page consists of.
-    :param xpaths: Dictionary pointing to the xpaths given the ad type. None if the xpath is not set for the ad type.
-    :return: The scraped data as dictionary. The keys of the dictionary depends on the ad type.
-    """
+
+    r = requests.get(url)
+    tree = etree.HTML(r.text)
+        
     result_dict = {
-        'url': driver.current_url,
-        'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
+        'finn_code': code,
+        "key": key,
+        "url": url,
+        'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     }
 
     if not xpaths:
-        result_dict['content_html'] = driver.find_element(By.TAG_NAME, "body").get_attribute("outerHTML")
-        result_dict['sub_domain'] = key
-    else:
-        for k, value in xpaths.items():
-            try:
-                content = driver.find_element(By.XPATH, value).get_attribute('innerHTML') # TODO
-            except selenium.common.exceptions.NoSuchElementException:
-                content = ''
+        logging.info("NO XPATHS")
+        logging.info(f'{key} URL: {url}')
+        return result_dict
+        # result_dict['content_html'] = driver.find_element(By.TAG_NAME, "body").get_attribute("outerHTML")
+        # result_dict['sub_domain'] = key
 
-            result_dict[k] = content
+    text_xpaths = xpaths["text"]
+    html_xpaths = xpaths["html"]
+
+    for k, value in text_xpaths.items():
+        content = tree.xpath(value)
+        if not content:
+            result_dict[k] = None
+        else:
+            result_dict[k] = etree.tostring(content[0], method='text', encoding='unicode')
+
+    for k, value in html_xpaths.items():
+        content = tree.xpath(value)
+        if not content:
+            result_dict[k] = None
+        else:
+            result_dict[k] = etree.tostring(content[0], method='html', encoding='unicode')
+
 
     if 'title' in result_dict:
         logging.info(f'{key} TITLE: {result_dict["title"]}')
     else:
-        logging.info(f'{key} URL: {driver.current_url}')
+        logging.info(f'{key} URL: {url}')
 
     return result_dict
-
-
-def accept_cookie(driver):
-    """When scraping housing, accepting a cookie is required at the initial link."""
-
-    # Trigger cookie
-    driver.get('https://www.finn.no/realestate/homes/search.html?published=1')
-
-    try:
-        WebDriverWait(driver, 3).until(
-            EC.frame_to_be_available_and_switch_to_it((By.XPATH, '//*[@title="SP Consent Message"]')))
-        WebDriverWait(driver, 3).until(
-            EC.presence_of_element_located((By.XPATH, '//button[@title="Godta alle"]'))).click()
-        driver.switch_to.parent_frame()
-    except selenium.common.exceptions.TimeoutException:
-        logging.critical('Failed to accept cookie.')
 
 
 def previously_scraped():
@@ -108,18 +102,8 @@ def previously_scraped():
     return scraped_urls
 
 
-def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
-    """ Scrape a subdomain. This can for example be finn.com/housing/homes. Though the subdomain in the
-    example is homes, other keys can be present on the page, such as newbuildings.
+def scrape_sub_url(curr_time, sub_url, scraped_urls):
 
-    The function scrapes through all ads which has been uploaded within 24 hours.
-
-    :param driver: Selenium web driver.
-    :param curr_time: Time and the intiation of the process. Used for filenames.
-    :param sub_url: The current sub url which is being scraped. E.g. /homes, /fulltime.
-    :param scraped_urls: List of previously scraped URLs to reduce repeat scrapes.
-    :param xpaths: Xpath spesifications for the different type of ads.
-    """
     domain_url = BASE_URL + sub_url
     pattern = re.compile(r'finn\.no/(\w+)/(\w+)')
 
@@ -127,10 +111,14 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
     for current_page in range(1, 50):
         logging.info(f'Scraping page {current_page}')
 
-        driver.get(f'{domain_url}/search.html?page={current_page}&published=1')
+        r = requests.get(f'{domain_url}/search.html?page={current_page}&published=1')
 
-        all_urls = driver.find_elements(By.TAG_NAME, 'a')
-        all_urls = [u.get_attribute('href') for u in all_urls]
+        html_content = r.text
+
+        soup = BeautifulSoup(html_content, "html.parser")
+        a_tags = soup.find_all("a")
+
+        all_urls = [u.get("href") for u in a_tags]
 
         page_urls = [u for u in all_urls if re.compile(r'page=\d+').search(u) and sub_url in u]
         ad_urls = [u for u in all_urls if re.compile(r'finnkode=\d+').search(u)]
@@ -145,72 +133,62 @@ def scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths):
             if url in scraped_urls:
                 logging.info(f'ALREADY SCRAPED: {url}')
                 continue
-
+            
             scraped_urls.append(url)
-
+            
+            # Key may differ from suburl
             key = re.search(pattern, url).group(2)
+            xpath = load_xpath(key)
 
-            if key in xpaths.keys():
-                key_xpaths = xpaths[key]
-                filename_key = key
+            results = scrape_page(key, xpath, url)
+
+            if not xpath:
+                key = 'other'
+
+            if key in page_ads.keys():
+                page_ads[key].append(results)
             else:
-                key_xpaths = None
-                filename_key = 'other'
-
-
-            driver.execute_script("window.open(arguments[0], '_blank');", url)
-            driver.switch_to.window(driver.window_handles[1])
-
-            results = scrape_page(driver, key, key_xpaths)
-
-            driver.close()
-            driver.switch_to.window(driver.window_handles[0])
-
-            if filename_key in page_ads.keys():
-                page_ads[filename_key].append(results)
-            else:
-                page_ads[filename_key] = [results]
-
+                page_ads[key] = [results]
 
             time.sleep(random.uniform(0.5, 1.5))
 
-
-        # Write the scraped data to CSV files corresponding to their ad type.
-        # TODO: Write only once
-        for filename_key, value in page_ads.items():
-            filename = f'scrapes/{filename_key}_{curr_time}.csv'
-            value_df = pd.DataFrame(value)
+        # Write result to file
+        for key in page_ads.keys():
+            filename = f'scrapes/{key}_{curr_time}.csv'
+            value_df = pd.DataFrame(page_ads[key])
 
             if os.path.isfile(filename):
                 scrape_df = pd.read_csv(filename, encoding='utf-8')
                 value_df = pd.concat([scrape_df, value_df])
 
             value_df.to_csv(filename, index=False, encoding='utf-8')
-
-
+    
         if f'{domain_url}/search.html?published=1&page={current_page + 1}' not in page_urls:
             logging.info(f'FINISHED SCRAPING {sub_url}.')
-            break
+            return
+
+        time.sleep(random.uniform(2.5, 5.5))
 
 
 def main():
-    curr_time = datetime.today().strftime('%Y_%m_%d-%H_%M')
+    curr_time = datetime.today().strftime('%Y_%m_%d_%H_%M')
     init_logging(f'logs/{curr_time}.log')
 
-    driver = load_driver()
-    driver.get(BASE_URL)
-    accept_cookie(driver)
-
-    xpaths = load_xpaths()
     sub_urls = get_sub_urls()
 
     # Iterate the different subdomains used to scrape the daily ads
     for sub_url in sub_urls:
         logging.info(f'SCRAPING DOMAIN: {sub_url}')
         scraped_urls = previously_scraped()
-        scrape_sub_url(driver, curr_time, sub_url, scraped_urls, xpaths)
+        scrape_sub_url(curr_time, sub_url, scraped_urls)
 
 
 if __name__ == "__main__":
+    headers = {
+        "User-Agent": "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2859.0 Safari/537.36",
+        "Accept-Language": "en-GB,en,q=0.5",
+        "Referer": "https://google.com",
+        "DNT": "1"
+    }
     BASE_URL = 'https://www.finn.no/'
     main()

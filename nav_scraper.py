@@ -1,82 +1,93 @@
+import requests
 import re
-import os
-import pandas as pd
-
-import selenium.common.exceptions
+import time
 
 from datetime import datetime
-from load_selenium import load_driver
-from selenium.webdriver.common.by import By
+from lxml import etree
+from bs4 import BeautifulSoup
 
 
-def scrape_nav_page(driver):
-    xpaths = {
-        'title': '//*[@id="main-content"]/article/h1',
-        'company': '//*[@id="main-content"]/article/section[1]/div[1]/p',
-        'location': '//*[@id="main-content"]/article/section[1]/div[2]/p',
-        'content': '//*[@id="main-content"]/article/section[2]',
-        'about': '//h2[contains(text(), "Om jobben")]/..',
-        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen")]/..',
-        'employer': '//h2[contains(text(), "Om bedriften")]/..',
-        'ad_data': '//h2[contains(text(), "Annonsedata")]/..',
-        'deadline': '/html/body/div/div/main/div/article/div/div[2]/div/dl/dd/p',
-        'source': '/html/body/div/div/main/div/article/div/div[2]/div/div',
-        'tmp': '//h2[contains(text(), "Om jobben")]/../../dl[1]'
-    }
-
+def scrape_nav_page(url):
+    r = requests.get(url)
+    tree = etree.HTML(r.text)
+        
     result_dict = {
-        'url': driver.current_url,
-        'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
+        "url": url,
+        'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     }
 
-    for k, value in xpaths.items():
-        try:
-            content = driver.find_element(By.XPATH, value).get_attribute('innerHTML')
-        except selenium.common.exceptions.NoSuchElementException:
-            content = ''
+    for k, v in text_xpaths.items():    
+        content = tree.xpath(v)
 
-        result_dict[k] = content
+        if not content:
+            result_dict[k] = None
+        else:
+            result_dict[k] = etree.tostring(content[0], method='text', encoding='unicode')
+
+    for k, v in html_xpaths.items():    
+        content = tree.xpath(v)
+
+        if not content:
+            result_dict[k] = None
+        else:
+            result_dict[k] = etree.tostring(content[0], method='html', encoding='unicode')
 
 
-    print(result_dict["title"])
     return result_dict
 
 
 def main():
 
-    driver = load_driver()
-    curr_time = datetime.today().strftime('%Y_%m_%d-%H_%M')
-
     page = 0
 
     while True:
-        driver.get(f'https://arbeidsplassen.nav.no/stillinger?from={page * 25}&published=now%2Fd')
+        url = f"{BASE_URL}/stillinger?from={page * 25}&published=now%2Fd"
 
-        all_urls = driver.find_elements(By.TAG_NAME, 'a')
-        all_urls = [u.get_attribute('href') for u in all_urls]
+        r = requests.get(url, headers=headers)
+        html_content = r.text
 
+        soup = BeautifulSoup(html_content, "html.parser")
+        a_tags = soup.find_all("a")
+
+        all_urls = [u.get("href") for u in a_tags]
+        
         ad_urls = [u for u in all_urls if re.compile(r'(\/stillinger\/stilling\/.+)').search(u)]
 
         if not ad_urls:
-            break
+            return
 
         for url in ad_urls:
-            driver.get(url)
-            result = scrape_nav_page(driver)
+            url = BASE_URL + url
+            
+            scrape_nav_page(url)
 
-            value_df = pd.DataFrame([result])
+            time.sleep(1)
 
-            filename = f'nav/{curr_time}.csv'
-
-            if os.path.isfile(filename):
-                scrape_df = pd.read_csv(filename, encoding='utf-8')
-                value_df = pd.concat([scrape_df, value_df])
-
-            value_df.to_csv(filename, index=False, encoding='utf-8')
-
-        print(f'Finished scraping page {page}')
         page += 1
 
 
 if __name__ == "__main__":
+    headers = {
+        "User-Agent": "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2859.0 Safari/537.36",
+        "Accept-Language": "en-GB,en,q=0.5",
+        "Referer": "https://google.com",
+        "DNT": "1"
+    }
+
+    text_xpaths = {
+        'title': '//*[@id="main-content"]/article/h1',
+        'company': '//*[@id="main-content"]/article/section[1]/div[1]/p',
+        'location': '//*[@id="main-content"]/article/section[1]/div[2]/p',
+        'job_posting_text': '//div[contains(@class, "job-posting-text")]',
+        'employer': '//h2[contains(text(), "Om bedriften")]/../div',
+        'deadline': '//h2[contains(text(), "Søk på jobben")]/../p',
+    }
+
+    html_xpaths = {
+        'about': '//h2[contains(text(), "Om jobben")]/../../dl',
+        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen")]/..',
+        'ad_data': '//h2[contains(text(), "Annonsedata")]/../dl'
+    }
+
+    BASE_URL = "https://arbeidsplassen.nav.no"
     main()
