@@ -1,3 +1,4 @@
+from helpers import load_random_headers
 import requests
 import re
 import time
@@ -8,7 +9,7 @@ from bs4 import BeautifulSoup
 
 
 def scrape_nav_page(url):
-    r = requests.get(url)
+    r = requests.get(url, headers=HEADERS)
     tree = etree.HTML(r.text)
         
     result_dict = {
@@ -43,7 +44,7 @@ def main():
     while True:
         url = f"{BASE_URL}/stillinger?from={page * 25}&published=now%2Fd"
 
-        r = requests.get(url, headers=headers)
+        r = requests.get(url, headers=HEADERS)
         html_content = r.text
 
         soup = BeautifulSoup(html_content, "html.parser")
@@ -67,12 +68,7 @@ def main():
 
 
 if __name__ == "__main__":
-    headers = {
-        "User-Agent": "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2859.0 Safari/537.36",
-        "Accept-Language": "en-GB,en,q=0.5",
-        "Referer": "https://google.com",
-        "DNT": "1"
-    }
+    HEADERS = load_random_headers()
 
     text_xpaths = {
         'title': '//*[@id="main-content"]/article/h1',

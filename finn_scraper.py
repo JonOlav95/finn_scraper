@@ -9,12 +9,12 @@ import requests
 from datetime import datetime
 from lxml import etree
 from bs4 import BeautifulSoup
-from helpers import get_sub_urls, load_xpath, init_logging, extract_datetime
+from helpers import get_sub_urls, load_xpath, init_logging, extract_datetime, load_random_headers
 
 
 def scrape_page(key, xpaths, url, finn_code):
 
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, headers=HEADERS)
     tree = etree.HTML(r.text)
         
     result_dict = {
@@ -66,7 +66,7 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
     for current_page in range(1, 50):
         logging.info(f'Scraping page {current_page}')
 
-        r = requests.get(f'{domain_url}/search.html?page={current_page}&published=1', headers=headers)
+        r = requests.get(f'{domain_url}/search.html?page={current_page}&published=1', headers=HEADERS)
 
         html_content = r.text
 
@@ -184,11 +184,6 @@ def main():
 
 
 if __name__ == "__main__":
-    headers = {
-        "User-Agent": "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2859.0 Safari/537.36",
-        "Accept-Language": "en-GB,en,q=0.5",
-        "Referer": "https://google.com",
-        "DNT": "1"
-    }
+    HEADERS = load_random_headers()
     BASE_URL = 'https://www.finn.no/'
     main()
