@@ -8,12 +8,12 @@ import yaml
 
 
 def extract_datetime(filename):
-    date_and_time = re.search(r'(\d{4}_\d{2}_\d{2}-\d{2}_\d{2})', filename)
+    date_and_time = re.search(r'(\d{4}_\d{2}_\d{2}_\d{2}_\d{2})', filename)
 
     if not date_and_time:
         return None
     
-    parsed_datetime = datetime.strptime(date_and_time[0], '%Y_%m_%d-%H_%M')
+    parsed_datetime = datetime.strptime(date_and_time[0], '%Y_%m_%d_%H_%M')
     parsed_datetime = parsed_datetime.strftime('%Y_%m_%d-%H_%M')
 
     return parsed_datetime
@@ -47,78 +47,102 @@ def load_flags():
     return flags
 
 
-def load_xpaths():
+
+def load_xpath(key):
 
     default_housing = {
-        'title': '//section[@data-testid="object-title"]//h1',
-        'local_area_name': '//div[@data-testid="local-area-name"]',
-        'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]', # Finn no typo
-        'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-        'key_info': '//section[@data-testid="key-info"]//dl',
-        'facilities': '//section[@data-testid="object-facilities"]//div',
-        'about': '//section[@data-testid="about-property"]',
-        'location': '//span[@data-testid="object-address"]'
-        }
-    
-    default_work = {
-        'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]",
-        'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]",
-        'content': "//div[@class='import-decoration']",
-        'definition_2': "//dl[@class='definition-list definition-list--inline']",
-        'keywords': "//*[contains(text(),'Nøkkelord')]/following-sibling::*"
-    }
-
-    return {
-        'homes': {
+        "text": {
             'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//span[@data-testid="object-address"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-incicative-price"]//span[2]', # Finn typo
+            'local_area_name': '//div[@data-testid="local-area-name"]',
+            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]', 
             'pricing_details': '//section[@data-testid="pricing-details"]//dl',
             'key_info': '//section[@data-testid="key-info"]//dl',
             'facilities': '//section[@data-testid="object-facilities"]//div',
             'about': '//section[@data-testid="about-property"]',
             'location': '//span[@data-testid="object-address"]'
         },
+        "html": {
+        }
+    }
+
+    default_work = {
+        "text": {
+            'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]//h1",
+            'content': "//div[@class='import-decoration']//section",
+            'keywords': "//*[contains(text(),'Nøkkelord')]/following-sibling::*"
+        },
+        "html": {
+            'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]//dl",
+            'definition_2': "//dl[@class='definition-list definition-list--inline']",
+        }
+    }
+
+    newbuildings = {
+        "text": {
+            'title': '//h1[@class="mb-16 text-34"]',
+            'sub_title': '//h2[@class="mb-16 text-22"]',
+            'stpe': '//div[@class=" w-full flex"]',
+            'price': '//p[contains(text(), "Pris")]/following-sibling::p[1]',
+            'total_price': '//p[contains(text(), "Totalpris")]/following-sibling::p[1]',
+            'joint_debt': '//p[contains(text(), "Fellesgjeld")]/following-sibling::p[1]',
+            'local_area_name': '//svg[@alt="Beliggenhet ikon"]/following-sibling::p[1]',
+            'keywords': "//h3[contains(text(),'Nøkkelord') or contains(text(), 'Nøkkelinfo')]/following-sibling::div[1]",
+            'short_about': '//h3[contains(text(), "Kort om prosjektet")]/following-sibling::p[1]',
+            'facilities': '//h3[contains(text(),"Fasiliteter")]/following-sibling::div[1]',
+            'units_in_project': '//table[@class="w-full"]',
+            'about': '//h3[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
+            'location': '//h3[@id="beliggenhet"]/following-sibling::div[1]'
+        },
+        "html": {
+
+        }
+    }
+
+    xpaths = {
+        "homes": {
+            "text": {
+                'title': '//section[@data-testid="object-title"]//h1',
+                'local_area_name': '//span[@data-testid="object-address"]',
+                'pricing_inciactive': '//div[@data-testid="pricing-incicative-price"]//span[2]', # Finn typo
+                'pricing_details': '//section[@data-testid="pricing-details"]//dl',
+                'key_info': '//section[@data-testid="key-info"]//dl',
+                'facilities': '//section[@data-testid="object-facilities"]//div',
+                'about': '//section[@data-testid="about-property"]',
+                'location': '//span[@data-testid="object-address"]'
+            },
+            "html": {
+            }
+        },
+
+        'positions': {
+            "text": {
+                'title': "//div[@data-testid='aggregated-ad-object']//div[1]//h1[1]",
+                'content': "//div[@data-testid='aggregated-ad-object']//div[1]//section[1]",
+
+            },
+            "html": {
+                'definition_1': "//div[@data-testid='aggregated-ad-object']//div[1]//dl[1]",
+                'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]"
+            }
+       },
+
         'lettings': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'pricing_common_monthly_cost': '//div[@data-testid="pricing-common-monthly-cost"]//dd',
-            'pricing_depositum': '//div[@data-testid="pricing-deposit"]//dd',
-            'pricing_common_includes': '//div[@data-testid="pricing-common-includes"]//dd',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]'
+            "text": {
+                'title': '//section[@data-testid="object-title"]//h1',
+                'pricing_common_monthly_cost': '//div[@data-testid="pricing-common-monthly-cost"]//dd',
+                'pricing_depositum': '//div[@data-testid="pricing-deposit"]//dd',
+                'pricing_common_includes': '//div[@data-testid="pricing-common-includes"]//dd',
+                'key_info': '//section[@data-testid="key-info"]//dl',
+                'facilities': '//section[@data-testid="object-facilities"]//div',
+                'about': '//section[@data-testid="about-property"]',
+                'location': '//span[@data-testid="object-address"]'
+            },
+            "html": {
+            }
         },
-        'newbuildings': {
-            'title': '//h1[@class="mb-16 text-34"]',
-            'sub_title': '//h2[@class="mb-16 text-22"]',
-            'stpe': '//div[@class=" w-full flex"]',
-            'price': '//p[contains(text(), "Pris")]/following-sibling::p[1]',
-            'total_price': '//p[contains(text(), "Totalpris")]/following-sibling::p[1]',
-            'joint_debt': '//p[contains(text(), "Fellesgjeld")]/following-sibling::p[1]',
-            'local_area_name': '//svg[@alt="Beliggenhet ikon"]/following-sibling::p[1]',
-            'keywords': "//h3[contains(text(),'Nøkkelord') or contains(text(), 'Nøkkelinfo')]/following-sibling::div[1]",
-            'short_about': '//h3[contains(text(), "Kort om prosjektet")]/following-sibling::p[1]',
-            'facilities': '//h3[contains(text(),"Fasiliteter")]/following-sibling::div[1]',
-            'units_in_project': '//table[@class="w-full"]',
-            'about': '//h3[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
-            'location': '//h3[@id="beliggenhet"]/following-sibling::div[1]'
-        },
-        'nybygg': {
-            'title': '//h1[@class="mb-16 text-34"]',
-            'sub_title': '//h2[@class="mb-16 text-22"]',
-            'stpe': '//div[@class=" w-full flex"]',
-            'price': '//p[contains(text(), "Pris")]/following-sibling::p[1]',
-            'total_price': '//p[contains(text(), "Totalpris")]/following-sibling::p[1]',
-            'joint_debt': '//p[contains(text(), "Fellesgjeld")]/following-sibling::p[1]',
-            'local_area_name': '//svg[@alt="Beliggenhet ikon"]/following-sibling::p[1]',
-            'keywords': "//h3[contains(text(),'Nøkkelord') or contains(text(), 'Nøkkelinfo')]/following-sibling::div[1]",
-            'short_about': '//h3[contains(text(), "Kort om prosjektet")]/following-sibling::p[1]',
-            'facilities': '//h3[contains(text(),"Fasiliteter")]/following-sibling::div[1]',
-            'units_in_project': '//table[@class="w-full"]',
-            'about': '//h3[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
-            'location': '//h3[@id="beliggenhet"]/following-sibling::div[1]'
-        },
+
+        'newbuildings': newbuildings,
+        'nybygg': newbuildings,
 
         'leisuresale': default_housing,
         'abroad': default_housing,
@@ -132,29 +156,29 @@ def load_xpaths():
         'fulltime': default_work,
         'management': default_work,
         'parttime': default_work,
-        
-        'positions': {
-            'definition_1': "//div[@data-testid='aggregated-ad-object']//div[1]//dl[1]",
-            'title': "//div[@data-testid='aggregated-ad-object']//div[1]//h1[1]",
-            'content': "//div[@data-testid='aggregated-ad-object']//div[1]//section[1]",
-            'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]"
-        }
     }
+
+    if key not in xpaths.keys():
+        return None
+
+    return xpaths[key]
+
 
 
 def get_sub_urls():
     return [
-        'realestate/homes',
         'job/fulltime',
         'job/parttime',
         'job/management',
+        'realestate/homes',
+        'realestate/newbuildings',
+
         'realestate/plots',
         'realestate/leisureplots',
         'realestate/lettings',
         'realestate/wanted',
         'realestate/abroad',
         'realestate/leisuresale',
-        'realestate/newbuildings',
         'realestate/businesssale',
         'realestate/businessrent',
         'realestate/businessplots',
