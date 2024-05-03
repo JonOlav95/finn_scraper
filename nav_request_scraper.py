@@ -1,6 +1,8 @@
 import requests
 import re
 import time
+
+from datetime import datetime
 from lxml import etree
 from bs4 import BeautifulSoup
 
@@ -8,42 +10,28 @@ from bs4 import BeautifulSoup
 def scrape_nav_page(url):
     r = requests.get(url)
     tree = etree.HTML(r.text)
-
-
-    text_xpaths = {
-        'title': '//*[@id="main-content"]/article/h1',
-        'company': '//*[@id="main-content"]/article/section[1]/div[1]/p',
-        'location': '//*[@id="main-content"]/article/section[1]/div[2]/p',
-        'content': '//*[@id="main-content"]/article/section[2]',
-        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen")]/..',
-        'employer': '//h2[contains(text(), "Om bedriften")]/..',
-        'deadline': '/html/body/div/div/main/div/article/div/div[2]/div/dl/dd/p',
-    }
-
-    html_xpaths = {
-        'about': '//h2[contains(text(), "Om jobben")]/..',
-        'ad_data': '//h2[contains(text(), "Annonsedata")]/..',
-        'source': '/html/body/div/div/main/div/article/div/div[2]/div/div',
-    }
-
         
-    result_dict = {}
+    result_dict = {
+        "url": url,
+        'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+    }
 
     for k, v in text_xpaths.items():    
         content = tree.xpath(v)
 
         if not content:
-            continue
-    
-        result_dict[k] = etree.tostring(content[0], method='text', encoding='unicode')
+            result_dict[k] = None
+        else:
+            result_dict[k] = etree.tostring(content[0], method='text', encoding='unicode')
 
     for k, v in html_xpaths.items():    
         content = tree.xpath(v)
 
         if not content:
-            continue
+            result_dict[k] = None
+        else:
+            result_dict[k] = etree.tostring(content[0], method='html', encoding='unicode')
 
-        result_dict[k] = etree.tostring(content[0], method='html', encoding='unicode')
 
     return result_dict
 
@@ -66,11 +54,12 @@ def main():
         ad_urls = [u for u in all_urls if re.compile(r'(\/stillinger\/stilling\/.+)').search(u)]
 
         if not ad_urls:
-            break
+            return
 
         for url in ad_urls:
-            page = BASE_URL + url
-            scrape_nav_page(page)
+            url = BASE_URL + url
+            
+            scrape_nav_page(url)
 
             time.sleep(1)
 
@@ -83,6 +72,21 @@ if __name__ == "__main__":
         "Accept-Language": "en-GB,en,q=0.5",
         "Referer": "https://google.com",
         "DNT": "1"
+    }
+
+    text_xpaths = {
+        'title': '//*[@id="main-content"]/article/h1',
+        'company': '//*[@id="main-content"]/article/section[1]/div[1]/p',
+        'location': '//*[@id="main-content"]/article/section[1]/div[2]/p',
+        'job_posting_text': '//div[contains(@class, "job-posting-text")]',
+        'employer': '//h2[contains(text(), "Om bedriften")]/../div',
+        'deadline': '//h2[contains(text(), "Søk på jobben")]/../p',
+    }
+
+    html_xpaths = {
+        'about': '//h2[contains(text(), "Om jobben")]/../../dl',
+        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen")]/..',
+        'ad_data': '//h2[contains(text(), "Annonsedata")]/../dl'
     }
 
     BASE_URL = "https://arbeidsplassen.nav.no"
