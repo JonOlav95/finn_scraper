@@ -3,7 +3,7 @@ import random
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
-from helpers import load_flags
+from misc_helpers import load_flags
 
 from random import choice
 

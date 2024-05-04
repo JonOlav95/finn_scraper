@@ -1,12 +1,17 @@
 import requests
 import re
+import random
 import time
+import os
+import logging
+import pandas as pd
 
 from datetime import datetime
 from lxml import etree
 from bs4 import BeautifulSoup
 
-from helpers import load_random_headers
+from scrape_helpers import previously_scraped
+from misc_helpers import load_random_headers, init_logging
 
 
 def scrape_nav_page(url):
@@ -14,7 +19,7 @@ def scrape_nav_page(url):
     tree = etree.HTML(r.text)
         
     result_dict = {
-        "url": url,
+        'url': url,
         'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     }
 
@@ -35,11 +40,21 @@ def scrape_nav_page(url):
             result_dict[k] = etree.tostring(content[0], method='html', encoding='unicode')
 
 
+    if 'title' in result_dict:
+        logging.info(f'TITLE: {result_dict["title"]}')
+    else:
+        logging.info(f'URL: {url}')
+
     return result_dict
 
 
 def main():
+    curr_time = datetime.today().strftime('%Y_%m_%d_%H_%M')
+    init_logging(f'logs/nav_{curr_time}.log')
 
+    filename = f'nav/nav_{curr_time}.csv'
+
+    scraped_urls = previously_scraped('nav', 'url', 30)
     page = 0
 
     while True:
@@ -49,21 +64,38 @@ def main():
         html_content = r.text
 
         soup = BeautifulSoup(html_content, "html.parser")
-        a_tags = soup.find_all("a")
+        a_tags = soup.find_all('a')
 
-        all_urls = [u.get("href") for u in a_tags]
+        all_urls = [u.get('href') for u in a_tags]
         
         ad_urls = [u for u in all_urls if re.compile(r'(\/stillinger\/stilling\/.+)').search(u)]
 
         if not ad_urls:
             return
+        
+        ads = []
 
         for url in ad_urls:
             url = BASE_URL + url
             
-            scrape_nav_page(url)
+            if url in scraped_urls:
+                continue
 
-            time.sleep(1)
+            scraped_urls.append(url)
+
+            result = scrape_nav_page(url)
+            ads.append(result)
+
+            time.sleep(random.uniform(0.75, 1.5))
+
+
+        if os.path.isfile(filename):
+            scrape_df = pd.read_csv(filename, encoding='utf-8')
+
+        if ads:
+            value_df = pd.DataFrame(ads)
+            value_df = pd.concat([scrape_df, value_df])
+            value_df.to_csv(filename, index=False, encoding='utf-8')
 
         page += 1
 
@@ -82,7 +114,7 @@ if __name__ == "__main__":
 
     html_xpaths = {
         'about': '//h2[contains(text(), "Om jobben")]/../../dl',
-        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen")]/..',
+        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen") or contains(text(), "Kontaktpersoner for stillingen")]/..',
         'ad_data': '//h2[contains(text(), "Annonsedata")]/../dl'
     }
 

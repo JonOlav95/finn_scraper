@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 from datetime import datetime
-from helpers import extract_datetime
+from scrape_helpers import extract_datetime
 
 
 def inspect_log_files(n_logs=10):
@@ -43,8 +43,6 @@ def inspect_latest_scrape(scrape_files):
     print(f'LAST SCRAPE ({newest_date_parsed})')
     count_scrapes(latest_scrapes)
 
-    return
-
 
 def count_scrapes(filenames):
     n_scrapes = {}
@@ -70,6 +68,10 @@ def count_scrapes(filenames):
 
 def main():
     scrape_files = os.listdir('scrapes')
+
+    if not scrape_files:
+        print("No scrape logs")
+        return
 
     print("-" * 70)
     inspect_log_files()

@@ -17,8 +17,7 @@ def extract_datetime(filename):
     return parsed_datetime
 
 
-def previously_scraped(dirpath, n_files):
-    n_files = 30
+def previously_scraped(dirpath, column, n_files):
 
     metadata = []
 
@@ -53,6 +52,6 @@ def previously_scraped(dirpath, n_files):
         (pd.read_csv(f'{dirpath}/{f}', encoding='utf-8') for f in files if os.path.isfile(f'{dirpath}/{f}')),
         ignore_index=True)
 
-    scraped_codes = previous_scrapes['finn_code'].to_list()
+    scraped_codes = previous_scrapes[column].to_list()
 
     return scraped_codes

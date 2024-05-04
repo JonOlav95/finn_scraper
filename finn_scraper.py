@@ -9,7 +9,7 @@ import requests
 from datetime import datetime
 from lxml import etree
 from bs4 import BeautifulSoup
-from helpers import get_sub_urls, load_xpath, init_logging, load_random_headers
+from misc_helpers import get_sub_urls, load_xpath, init_logging, load_random_headers
 from scrape_helpers import extract_datetime, previously_scraped
 
 
@@ -138,7 +138,7 @@ def main():
     # Iterate the different subdomains used to scrape the daily ads
     for sub_url in sub_urls:
         logging.info(f'SCRAPING DOMAIN: {sub_url}')
-        scraped_codes = previously_scraped('scrapes', 30)
+        scraped_codes = previously_scraped('scrapes', 'finn_code', 30)
         scrape_sub_url(curr_time, sub_url, scraped_codes)
 
 

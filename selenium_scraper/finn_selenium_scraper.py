@@ -12,7 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from helpers import get_sub_urls, load_xpaths, init_logging, extract_datetime
+from misc_helpers import get_sub_urls, load_xpaths, init_logging, extract_datetime
 
 
 def scrape_page(driver, key, xpaths):
