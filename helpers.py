@@ -33,16 +33,6 @@ def load_random_headers():
     return headers
     
 
-def extract_datetime(filename):
-    date_and_time = re.search(r'(\d{4}_\d{2}_\d{2}_\d{2}_\d{2})', filename)
-
-    if not date_and_time:
-        return None
-    
-    parsed_datetime = datetime.strptime(date_and_time[0], '%Y_%m_%d_%H_%M')
-    parsed_datetime = parsed_datetime.strftime('%Y_%m_%d_%H_%M')
-
-    return parsed_datetime
 
 
 

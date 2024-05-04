@@ -9,7 +9,8 @@ import requests
 from datetime import datetime
 from lxml import etree
 from bs4 import BeautifulSoup
-from helpers import get_sub_urls, load_xpath, init_logging, extract_datetime, load_random_headers
+from helpers import get_sub_urls, load_xpath, init_logging, load_random_headers
+from scrape_helpers import extract_datetime, previously_scraped
 
 
 def scrape_page(key, xpaths, url, finn_code):
@@ -128,48 +129,6 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
         time.sleep(random.uniform(2.5, 5.5))
 
 
-def previously_scraped():
-    dirpath = 'scrapes'
-    n_files = 30
-
-    metadata = []
-
-    filenames = os.listdir(dirpath)
-    filenames = sorted(filenames, key=extract_datetime)
-    filenames = filenames[-n_files:]
-
-    for f in filenames:
-
-        with open(f'{dirpath}/{f}', encoding='utf-8') as file:
-            n_ads = sum(1 for _ in file)
-
-        if n_ads == 0:
-            os.remove(f'{dirpath}/{f}')
-            continue
-
-        row = {
-            'filename': f,
-            'datetime': extract_datetime(f),
-            'n_ads': n_ads
-        }
-
-        metadata.append(row)
-
-    # No previous scrapes
-    if not metadata:
-        return []
-
-    files = [d['filename'] for d in metadata]
-
-    previous_scrapes = pd.concat(
-        (pd.read_csv(f'{dirpath}/{f}', encoding='utf-8') for f in files if os.path.isfile(f'{dirpath}/{f}')),
-        ignore_index=True)
-
-    scraped_codes = previous_scrapes['finn_code'].to_list()
-
-    return scraped_codes
-
-
 def main():
     curr_time = datetime.today().strftime('%Y_%m_%d_%H_%M')
     init_logging(f'logs/{curr_time}.log')
@@ -179,7 +138,7 @@ def main():
     # Iterate the different subdomains used to scrape the daily ads
     for sub_url in sub_urls:
         logging.info(f'SCRAPING DOMAIN: {sub_url}')
-        scraped_codes = previously_scraped()
+        scraped_codes = previously_scraped('scrapes', 30)
         scrape_sub_url(curr_time, sub_url, scraped_codes)
 
 

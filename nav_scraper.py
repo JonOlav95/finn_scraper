@@ -1,4 +1,3 @@
-from helpers import load_random_headers
 import requests
 import re
 import time
@@ -6,6 +5,8 @@ import time
 from datetime import datetime
 from lxml import etree
 from bs4 import BeautifulSoup
+
+from helpers import load_random_headers
 
 
 def scrape_nav_page(url):
