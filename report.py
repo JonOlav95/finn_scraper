@@ -28,7 +28,7 @@ def inspect_log_files(n_logs=10):
     print(f"Found {errors_found} errors or criticals in the last {n_logs} log files.")
 
 
-def inspect_latest_scrape(scrape_files):
+def inspect_latest_scrape(dir, scrape_files):
 
     dates = [re.search(r'(\d{4}_\d{2}_\d{2}_\d{2}_\d{2})', f) for f in scrape_files]
     dates = [datetime.strptime(d[0], '%Y_%m_%d_%H_%M') for d in dates]
@@ -40,15 +40,15 @@ def inspect_latest_scrape(scrape_files):
     latest_scrapes = [re.search(fr'.+{newest_date_parsed}.+', f) for f in scrape_files]
     latest_scrapes = [x[0] for x in latest_scrapes if x]
 
-    print(f'LAST SCRAPE ({newest_date_parsed})')
-    count_scrapes(latest_scrapes)
+    print(f'LAST SCRAPE ({dir}, {newest_date_parsed})')
+    count_scrapes(dir, latest_scrapes)
 
 
-def count_scrapes(filenames):
+def count_scrapes(dir, filenames):
     n_scrapes = {}
 
     for filename in filenames:
-        filepath = f'scrapes/{filename}'
+        filepath = f'{dir}/{filename}'
 
         key = re.search(r'^([^_]+)', filename).group(1)
         df = pd.read_csv(filepath)
@@ -66,8 +66,8 @@ def count_scrapes(filenames):
         print(f'{str(key).ljust(max_key_length)} = {value}')
 
 
-def main():
-    scrape_files = os.listdir('scrapes')
+def main(dir):
+    scrape_files = os.listdir(dir)
 
     if not scrape_files:
         print("No scrape logs")
@@ -76,17 +76,17 @@ def main():
     print("-" * 70)
     inspect_log_files()
     print("-" * 70)
-    inspect_latest_scrape(scrape_files)
+    inspect_latest_scrape(dir, scrape_files)
     print("-" * 70)
-    print("ALL SCRAPES")
-    count_scrapes(scrape_files)
+    print(f"ALL SCRAPES IN {dir}")
+    count_scrapes(dir, scrape_files)
     print("-" * 70)
 
 
     folder_size = 0
 
     for filename in scrape_files:
-        filepath = f'scrapes/{filename}'
+        filepath = f'{dir}/{filename}'
         folder_size += os.path.getsize(filepath)
 
     folder_size /= (1024 * 1024)
@@ -97,4 +97,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main('nav')
+    print()
+    main('scrapes')
