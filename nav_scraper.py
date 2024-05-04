@@ -119,4 +119,5 @@ if __name__ == "__main__":
     }
 
     BASE_URL = "https://arbeidsplassen.nav.no"
+    
     main()

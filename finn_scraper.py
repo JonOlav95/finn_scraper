@@ -10,7 +10,7 @@ from datetime import datetime
 from lxml import etree
 from bs4 import BeautifulSoup
 from misc_helpers import get_sub_urls, load_xpath, init_logging, load_random_headers
-from scrape_helpers import extract_datetime, previously_scraped
+from scrape_helpers import previously_scraped
 
 
 def scrape_page(key, xpaths, url, finn_code):
@@ -28,9 +28,11 @@ def scrape_page(key, xpaths, url, finn_code):
     if not xpaths:
         logging.info("NO XPATHS")
         logging.info(f'{key} URL: {url}')
+
+        entire_html = etree.tostring(tree, encoding='unicode')
+        result_dict["html"] = entire_html
+
         return result_dict
-        # result_dict['content_html'] = driver.find_element(By.TAG_NAME, "body").get_attribute("outerHTML")
-        # result_dict['sub_domain'] = key
 
     text_xpaths = xpaths["text"]
     html_xpaths = xpaths["html"]
