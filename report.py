@@ -97,6 +97,5 @@ def main(dir):
 
 
 if __name__ == "__main__":
-    main('nav')
-    print()
+    #main('nav')
     main('scrapes')

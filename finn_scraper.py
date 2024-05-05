@@ -15,15 +15,20 @@ from scrape_helpers import previously_scraped
 
 def scrape_page(key, xpaths, url, finn_code):
 
-    r = requests.get(url, headers=HEADERS)
-    tree = etree.HTML(r.text)
-        
     result_dict = {
         'finn_code': finn_code,
         "key": key,
         "url": url,
         'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     }
+
+    r = requests.get(url, headers=HEADERS)
+
+    if r.status_code is not 200:
+        logging.critical(f"RESPONSE CODE {r.status_code}")
+        
+
+    tree = etree.HTML(r.text)
 
     if not xpaths:
         logging.info("NO XPATHS")

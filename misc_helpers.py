@@ -183,10 +183,10 @@ def load_xpath(key):
 
 def get_sub_urls():
     return [
-        'realestate/homes',
         'job/fulltime',
         'job/parttime',
         'job/management',
+        'realestate/homes',
 
         'realestate/newbuildings',
         
