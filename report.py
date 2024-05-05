@@ -2,7 +2,7 @@ import re
 import os
 import pandas as pd
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from scrape_helpers import extract_datetime
 
 
@@ -28,30 +28,49 @@ def inspect_log_files(n_logs=10):
     print(f"Found {errors_found} errors or criticals in the last {n_logs} log files.")
 
 
-def inspect_latest_scrape(dir, scrape_files):
+def create_scrape_timeseries(scrape_files):
 
-    dates = [re.search(r'(\d{4}_\d{2}_\d{2}_\d{2}_\d{2})', f) for f in scrape_files]
-    dates = [datetime.strptime(d[0], '%Y_%m_%d_%H_%M') for d in dates]
+    current_date = datetime.now()
+    scrape_timeseries = {}
 
-    dates.sort(reverse=True)
+    for i in range(7):
+        date = (current_date - timedelta(days=i)).replace(hour=0, minute=0, second=0, microsecond=0)
+        files_for_date = []
 
-    newest_date_parsed = dates[0].strftime('%Y_%m_%d_%H_%M')
+        for filename in scrape_files:
 
-    latest_scrapes = [re.search(fr'.+{newest_date_parsed}.+', f) for f in scrape_files]
-    latest_scrapes = [x[0] for x in latest_scrapes if x]
+            file_date = datetime.strptime('_'.join(os.path.basename(filename).split('_')[1:4]), '%Y_%m_%d')
 
-    print(f'LAST SCRAPE ({dir}, {newest_date_parsed})')
-    count_scrapes(dir, latest_scrapes)
+            if file_date == date:
+                files_for_date.append(filename)
+
+        scrape_timeseries[date.strftime('%Y-%m-%d')] = files_for_date    
+        
+    #dates = [re.search(r'(\d{4}_\d{2}_\d{2}_\d{2}_\d{2})', f) for f in scrape_files]
+    #dates = [datetime.strptime(d[0], '%Y_%m_%d_%H_%M') for d in dates]
+    scrape_timeseries = dict(sorted(scrape_timeseries.items()))
+
+    for k, v in scrape_timeseries.items():
+        scrape_timeseries[k] = count_scrapes(v)
+
+    scrape_timeseries["total"] = count_scrapes(scrape_files)
+    timeseries_df = pd.DataFrame(scrape_timeseries)
+
+    # Move the total row to the bottom of the dataframe
+    total_row = timeseries_df.loc["TOTAL"]
+    timeseries_df = timeseries_df.drop("TOTAL")
+    timeseries_df = pd.concat([timeseries_df, total_row.to_frame().T])
+
+    print(timeseries_df.to_string())
 
 
-def count_scrapes(dir, filenames):
+def count_scrapes(filenames):
     n_scrapes = {}
 
     for filename in filenames:
-        filepath = f'{dir}/{filename}'
 
         key = re.search(r'^([^_]+)', filename).group(1)
-        df = pd.read_csv(filepath)
+        df = pd.read_csv(filename)
         n_lines = len(df.index)
 
         if key not in n_scrapes:
@@ -60,42 +79,40 @@ def count_scrapes(dir, filenames):
             n_scrapes[key] += n_lines
 
     n_scrapes['TOTAL'] = sum(n_scrapes.values())
-    max_key_length = max(len(str(key)) for key in n_scrapes.keys())
 
-    for key, value in n_scrapes.items():
-        print(f'{str(key).ljust(max_key_length)} = {value}')
+    return n_scrapes
 
 
-def main(dir):
-    scrape_files = os.listdir(dir)
-
-    if not scrape_files:
-        print("No scrape logs")
-        return
-
-    print("-" * 70)
-    inspect_log_files()
-    print("-" * 70)
-    inspect_latest_scrape(dir, scrape_files)
-    print("-" * 70)
-    print(f"ALL SCRAPES IN {dir}")
-    count_scrapes(dir, scrape_files)
-    print("-" * 70)
-
-
+def calculate_size(scrape_files):
     folder_size = 0
 
     for filename in scrape_files:
-        filepath = f'{dir}/{filename}'
+        filepath = f'{filename}'
         folder_size += os.path.getsize(filepath)
 
     folder_size /= (1024 * 1024)
     folder_size = round(folder_size)
 
-    print(f'SCRAPE FOLDER SIZE: {folder_size} MB')
-    print("-" * 70)
+    print(f'FOLDER SIZE: {folder_size} MB')
+
+
+def main():
+    finn_files = ['scrapes/' + s for s in os.listdir('scrapes')]
+    nav_files = ['nav/' + s for s in os.listdir('nav')]
+
+    scrape_files = finn_files + nav_files
+
+    if not scrape_files:
+        print("No scrape files.")
+        return
+
+    inspect_log_files()
+    calculate_size(scrape_files)
+    print()
+    create_scrape_timeseries(scrape_files)
+
 
 
 if __name__ == "__main__":
-    #main('nav')
-    main('scrapes')
+    #TODO PRINT KEYS IN 'other'
+    main()
