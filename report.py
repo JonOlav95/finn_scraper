@@ -143,7 +143,6 @@ def count_missing(scrape_files):
 
     for filename in scrape_files:
         df = pd.read_csv(filename)
-        df["tmp"] = None
         length = len(df.index)
 
         if length < 10:
@@ -171,11 +170,6 @@ def count_missing(scrape_files):
     print("--- 100% MISSING VALUES DETECTED ---")
     print(f"FILENAMES: {fnames}")
     print(f"COLUMNS: {missing}")
-
-
-
-
-
 
 
 def main():
