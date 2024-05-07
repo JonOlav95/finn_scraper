@@ -26,7 +26,7 @@ def inspect_log_files(n_logs=10):
                     print(f"FILE {f}\nError or Critical found in line {line_number}: {line.strip()}")
                     errors_found += 1
 
-    print(f'ERRORS/CRITICALS (n_logs={n_logs}): {errors_found})')
+    print(f'ERRORS/CRITICALS (n_logs={n_logs}): {errors_found}')
 
 
 def create_scrape_timeseries(scrape_files):
@@ -120,7 +120,7 @@ def missing_xpath_keys():
                 all_key_counts[k] = v
 
  
-    print(f'MISSING KEYS: {all_key_counts}')
+    print(f'MISSING KEYS (OTHER FILES): {all_key_counts}')
 
 
 def count_none_nan(value):
