@@ -1,5 +1,6 @@
 import re
 import os
+import numpy as np
 import pandas as pd
 
 from datetime import datetime, timedelta
@@ -25,7 +26,7 @@ def inspect_log_files(n_logs=10):
                     print(f"FILE {f}\nError or Critical found in line {line_number}: {line.strip()}")
                     errors_found += 1
 
-    print(f"Found {errors_found} errors or criticals in the last {n_logs} log files.")
+    print(f'ERRORS/CRITICALS (n_logs={n_logs}): {errors_found})')
 
 
 def create_scrape_timeseries(scrape_files):
@@ -61,7 +62,9 @@ def create_scrape_timeseries(scrape_files):
     timeseries_df = timeseries_df.drop("TOTAL")
     timeseries_df = pd.concat([timeseries_df, total_row.to_frame().T])
 
-    print(timeseries_df.to_string())
+    timeseries_df = timeseries_df.fillna(0)
+
+    print(timeseries_df.to_string(float_format="%.0f"))
 
 
 def count_scrapes(filenames):
@@ -96,6 +99,85 @@ def calculate_size(scrape_files):
     print(f'FOLDER SIZE: {folder_size} MB')
 
 
+def missing_xpath_keys():
+    files = [f for f in os.listdir('scrapes') if f.startswith('other')]
+    
+    all_key_counts = {}
+
+    for f in files:
+        df = pd.read_csv(f'scrapes/{f}')
+        key_count = df['key'].value_counts()
+
+        if key_count.empty:
+            continue
+        
+        key_count = dict(key_count)
+
+        for k, v in key_count.items():
+            if k in all_key_counts:
+                all_key_counts[k] += v
+            else:
+                all_key_counts[k] = v
+
+ 
+    print(f'MISSING KEYS: {all_key_counts}')
+
+
+def count_none_nan(value):
+    if pd.isna(value):
+        return 'NaN'
+    elif value is None:
+        return 'None'
+    else:
+        return 'Other'
+
+
+def count_missing(scrape_files):
+
+    # TODO: Check if working properly
+    scrape_files = sorted(scrape_files, key=extract_datetime)
+    scrape_files = scrape_files[-100:]
+
+    fnames = []
+    missing = {}
+
+    for filename in scrape_files:
+        df = pd.read_csv(filename)
+        df["tmp"] = None
+        length = len(df.index)
+
+        if length < 10:
+            continue
+        
+        counts = df.isna().sum()
+        counts /= len(df.index)
+
+        if 1 not in counts.values:
+            continue
+        
+        fnames.append(filename)
+        counts = dict(counts)
+        counts = [k for k, v in counts.items() if v==1]
+            
+        for k in counts:
+            if k in missing.keys():
+                missing[k] += 1
+            else:
+                missing[k] = 1
+
+    if not fnames:
+        return
+    
+    print("--- 100% MISSING VALUES DETECTED ---")
+    print(f"FILENAMES: {fnames}")
+    print(f"COLUMNS: {missing}")
+
+
+
+
+
+
+
 def main():
     finn_files = ['scrapes/' + s for s in os.listdir('scrapes')]
     nav_files = ['nav/' + s for s in os.listdir('nav')]
@@ -106,13 +188,12 @@ def main():
         print("No scrape files.")
         return
 
+    create_scrape_timeseries(scrape_files)
     inspect_log_files()
     calculate_size(scrape_files)
-    print()
-    create_scrape_timeseries(scrape_files)
-
+    missing_xpath_keys()
+    count_missing(scrape_files)
 
 
 if __name__ == "__main__":
-    #TODO PRINT KEYS IN 'other'
     main()
