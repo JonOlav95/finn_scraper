@@ -88,9 +88,10 @@ def main():
 
             time.sleep(random.uniform(0.75, 1.5))
 
-
         if os.path.isfile(filename):
             scrape_df = pd.read_csv(filename, encoding='utf-8')
+        else:
+            scrape_df = None
 
         if ads:
             value_df = pd.DataFrame(ads)
@@ -104,10 +105,10 @@ if __name__ == "__main__":
     HEADERS = load_random_headers()
 
     text_xpaths = {
-        'title': '//*[@id="main-content"]/article/h1',
-        'company': '//*[@id="main-content"]/article/section[1]/div[1]/p',
-        'location': '//*[@id="main-content"]/article/section[1]/div[2]/p',
-        'job_posting_text': '//div[contains(@class, "job-posting-text")]',
+        'title': '//*[@id="main-content"]/article/div/h1',
+        'company': '//*[@id="main-content"]/article/div/section[1]/div[1]/p',
+        'location': '//*[@id="main-content"]/article/div/section[1]/div[2]/p',
+        'job_content_text': '//div[contains(@class, "job-posting-text")]',
         'employer': '//h2[contains(text(), "Om bedriften")]/../div',
         'deadline': '//h2[contains(text(), "Søk på jobben")]/../p',
     }
@@ -115,6 +116,7 @@ if __name__ == "__main__":
     html_xpaths = {
         'about': '//h2[contains(text(), "Om jobben")]/../../dl',
         'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen") or contains(text(), "Kontaktpersoner for stillingen")]/..',
+        'job_content_html': '//div[contains(@class, "job-posting-text")]',
         'ad_data': '//h2[contains(text(), "Annonsedata")]/../dl'
     }
 

@@ -24,7 +24,7 @@ def scrape_page(key, xpaths, url, finn_code):
 
     r = requests.get(url, headers=HEADERS)
 
-    if r.status_code is not 200:
+    if r.status_code != 200:
         logging.critical(f"RESPONSE CODE {r.status_code}")
         
 
@@ -116,7 +116,7 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
             else:
                 page_ads[key] = [results]
 
-            time.sleep(random.uniform(0.5, 1.5))
+            time.sleep(random.uniform(0.75, 1.5))
 
         # Write result to file
         for key in page_ads.keys():
