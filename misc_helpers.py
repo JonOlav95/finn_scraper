@@ -64,97 +64,67 @@ def load_flags():
 def load_xpath(key):
 
     default_housing = {
-        "text": {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//span[@data-testid="object-address"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]'
-        },
-        "html": {
-            'cadastreinfo_part': '//h2[@id="cadastreinfo-part"]/following-sibling::div[1]',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-        }
+        'title': '//section[@data-testid="object-title"]//h1',
+        'local_area_name': '//span[@data-testid="object-address"]',
+        'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',
+        'about': '//section[@data-testid="about-property"]',
+        'location': '//span[@data-testid="object-address"]',
+        'cadastreinfo_part': '//h2[@id="cadastreinfo-part"]/following-sibling::div[1]', # html
+        'key_info': '//section[@data-testid="key-info"]//dl', # html
+        'facilities': '//section[@data-testid="object-facilities"]//div', # html
+        'pricing_details': '//section[@data-testid="pricing-details"]//dl', #html 
+        
     },
 
 
     default_work = {
-        "text": {
-            'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]//h1",
-            'content': "//div[@class='import-decoration']//section",
-            'keywords': "//*[contains(text(),'Nøkkelord')]/following-sibling::*"
-        },
-        "html": {
-            'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]//dl",
-            'definition_2': "//dl[@class='definition-list definition-list--inline']",
-        }
+        'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]//h1",
+        'content': "//div[@class='import-decoration']//section",
+        'keywords': "//*[contains(text(),'Nøkkelord')]/following-sibling::*",
+        'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]//dl", # html
+        'definition_2': "//dl[@class='definition-list definition-list--inline']", # html
     }
 
     newbuildings = {
-        "text": {
-            'title': '//h1[@class="mb-16 text-34"]',
-            'sub_title': '//h2[@class="mb-16 text-22"]',
-            'stpe': '//div[@class=" w-full flex"]',
-            'price': '//p[contains(text(), "Pris")]/following-sibling::p[1]',
-            'total_price': '//p[contains(text(), "Totalpris")]/following-sibling::p[1]',
-            'joint_debt': '//p[contains(text(), "Fellesgjeld")]/following-sibling::p[1]',
-            'local_area_name': '//svg[@alt="Beliggenhet ikon"]/following-sibling::p[1]',
-            'keywords': "//h3[contains(text(),'Nøkkelord') or contains(text(), 'Nøkkelinfo')]/following-sibling::div[1]",
-            'short_about': '//h3[contains(text(), "Kort om prosjektet")]/following-sibling::p[1]',
-            'facilities': '//h3[contains(text(),"Fasiliteter")]/following-sibling::div[1]',
-            'units_in_project': '//table[@class="w-full"]',
-            'about': '//h3[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
-            'location': '//h3[@id="beliggenhet"]/following-sibling::div[1]'
-        },
-        "html": {
-
-        }
+        'title': '//h1[@class="mb-16 text-34"]',
+        'sub_title': '//h2[@class="mb-16 text-22"]',
+        'stpe': '//div[@class=" w-full flex"]',
+        'price': '//p[contains(text(), "Pris")]/following-sibling::p[1]',
+        'total_price': '//p[contains(text(), "Totalpris")]/following-sibling::p[1]',
+        'joint_debt': '//p[contains(text(), "Fellesgjeld")]/following-sibling::p[1]',
+        'local_area_name': '//svg[@alt="Beliggenhet ikon"]/following-sibling::p[1]',
+        'keywords': "//h3[contains(text(),'Nøkkelord') or contains(text(), 'Nøkkelinfo')]/following-sibling::div[1]",
+        'short_about': '//h3[contains(text(), "Kort om prosjektet")]/following-sibling::p[1]',
+        'facilities': '//h3[contains(text(),"Fasiliteter")]/following-sibling::div[1]',
+        'units_in_project': '//table[@class="w-full"]',
+        'about': '//h3[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
+        'location': '//h3[@id="beliggenhet"]/following-sibling::div[1]'
     }
 
     xpaths = {
         "homes": {
-            "text": {
-                'title': '//section[@data-testid="object-title"]//h1',
-                'local_area_name': '//span[@data-testid="object-address"]',
-                'pricing_inciactive': '//div[@data-testid="pricing-incicative-price"]//span[2]', # Finn typo
-                'about': '//section[@data-testid="about-property"]',
-                'location': '//span[@data-testid="object-address"]'
-            },
-            "html": {
-                'cadastreinfo_part': '//h2[@id="cadastreinfo-part"]/following-sibling::div[1]',
-                'key_info': '//section[@data-testid="key-info"]//dl',
-                'facilities': '//section[@data-testid="object-facilities"]//div',
-                'pricing_details': '//section[@data-testid="pricing-details"]//dl',
-            }
+            'cadastreinfo_part': '//h2[@id="cadastreinfo-part"]/following-sibling::div[1]', # html
+            'key_info': '//section[@data-testid="key-info"]//dl', # html
+            'facilities': '//section[@data-testid="object-facilities"]//div', # html
+            'pricing_details': '//section[@data-testid="pricing-details"]//dl', # html
         },
 
         'positions': {
-            "text": {
-                'title': "//div[@data-testid='aggregated-ad-object']//div[1]//h1[1]",
-                'content': "//div[@data-testid='aggregated-ad-object']//div[1]//section[1]",
-
-            },
-            "html": {
-                'definition_1': "//div[@data-testid='aggregated-ad-object']//div[1]//dl[1]",
-                'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]"
-            }
+            'title': "//div[@data-testid='aggregated-ad-object']//div[1]//h1[1]",
+            'content': "//div[@data-testid='aggregated-ad-object']//div[1]//section[1]",
+            'definition_1': "//div[@data-testid='aggregated-ad-object']//div[1]//dl[1]", # html
+            'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]" # html
+        
        },
-
         'lettings': {
-            "text": {
-                'title': '//section[@data-testid="object-title"]//h1',
-                'pricing_common_monthly_cost': '//div[@data-testid="pricing-common-monthly-cost"]//dd',
-                'pricing_depositum': '//div[@data-testid="pricing-deposit"]//dd',
-                'pricing_common_includes': '//div[@data-testid="pricing-common-includes"]//dd',
-                'key_info': '//section[@data-testid="key-info"]//dl',
-                'facilities': '//section[@data-testid="object-facilities"]//div',
-                'about': '//section[@data-testid="about-property"]',
-                'location': '//span[@data-testid="object-address"]'
-            },
-            "html": {
-            }
+            'title': '//section[@data-testid="object-title"]//h1',
+            'pricing_common_monthly_cost': '//div[@data-testid="pricing-common-monthly-cost"]//dd',
+            'pricing_depositum': '//div[@data-testid="pricing-deposit"]//dd',
+            'pricing_common_includes': '//div[@data-testid="pricing-common-includes"]//dd',
+            'key_info': '//section[@data-testid="key-info"]//dl',
+            'facilities': '//section[@data-testid="object-facilities"]//div',
+            'about': '//section[@data-testid="about-property"]',
+            'location': '//span[@data-testid="object-address"]'    
         },
 
         'newbuildings': newbuildings,

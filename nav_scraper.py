@@ -7,48 +7,27 @@ import logging
 import pandas as pd
 
 from datetime import datetime
-from lxml import etree
 from bs4 import BeautifulSoup
 
 from scrape_helpers import previously_scraped
+from scrape_functions import scrape_page
 from misc_helpers import load_random_headers, init_logging
 
 
-def scrape_nav_page(url):
-    r = requests.get(url, headers=HEADERS)
-    tree = etree.HTML(r.text)
-        
-    result_dict = {
-        'url': url,
-        'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+def main():
+
+    xpaths = {
+        'title': '//*[@id="main-content"]/article/div/h1',
+        'company': '//*[@id="main-content"]/article/div/section[1]/div[1]/p',
+        'location': '//*[@id="main-content"]/article/div/section[1]/div[2]/p',
+        'job_content': '//div[contains(@class, "job-posting-text")]',
+        'employer': '//h2[contains(text(), "Om bedriften")]/../div',
+        'deadline': '//h2[contains(text(), "Søk på jobben")]/../p',
+        'about': '//h2[contains(text(), "Om jobben")]/../../dl',
+        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen") or contains(text(), "Kontaktpersoner for stillingen")]/..',
+        'ad_data': '//h2[contains(text(), "Annonsedata")]/../dl'
     }
 
-    for k, v in text_xpaths.items():    
-        content = tree.xpath(v)
-
-        if not content:
-            result_dict[k] = None
-        else:
-            result_dict[k] = etree.tostring(content[0], method='text', encoding='unicode')
-
-    for k, v in html_xpaths.items():    
-        content = tree.xpath(v)
-
-        if not content:
-            result_dict[k] = None
-        else:
-            result_dict[k] = etree.tostring(content[0], method='html', encoding='unicode')
-
-
-    if 'title' in result_dict:
-        logging.info(f'TITLE: {result_dict["title"]}')
-    else:
-        logging.info(f'URL: {url}')
-
-    return result_dict
-
-
-def main():
     curr_time = datetime.today().strftime('%Y_%m_%d_%H_%M')
     init_logging(f'logs/nav_{curr_time}.log')
 
@@ -83,43 +62,25 @@ def main():
 
             scraped_urls.append(url)
 
-            result = scrape_nav_page(url)
+            result = scrape_page(xpaths=xpaths, url=url, scrape_key='nav', headers=HEADERS)
+
             ads.append(result)
 
             time.sleep(random.uniform(0.75, 1.5))
 
+        value_df = pd.DataFrame(ads)
+
         if os.path.isfile(filename):
             scrape_df = pd.read_csv(filename, encoding='utf-8')
-        else:
-            scrape_df = None
-
-        if ads:
-            value_df = pd.DataFrame(ads)
             value_df = pd.concat([scrape_df, value_df])
-            value_df.to_csv(filename, index=False, encoding='utf-8')
+
+        value_df.to_csv(filename, index=False, encoding='utf-8')
 
         page += 1
 
 
 if __name__ == "__main__":
     HEADERS = load_random_headers()
-
-    text_xpaths = {
-        'title': '//*[@id="main-content"]/article/div/h1',
-        'company': '//*[@id="main-content"]/article/div/section[1]/div[1]/p',
-        'location': '//*[@id="main-content"]/article/div/section[1]/div[2]/p',
-        'job_content_text': '//div[contains(@class, "job-posting-text")]',
-        'employer': '//h2[contains(text(), "Om bedriften")]/../div',
-        'deadline': '//h2[contains(text(), "Søk på jobben")]/../p',
-    }
-
-    html_xpaths = {
-        'about': '//h2[contains(text(), "Om jobben")]/../../dl',
-        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen") or contains(text(), "Kontaktpersoner for stillingen")]/..',
-        'job_content_html': '//div[contains(@class, "job-posting-text")]',
-        'ad_data': '//h2[contains(text(), "Annonsedata")]/../dl'
-    }
-
     BASE_URL = "https://arbeidsplassen.nav.no"
-    
+
     main()

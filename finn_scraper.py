@@ -7,62 +7,10 @@ import pandas as pd
 import requests
 
 from datetime import datetime
-from lxml import etree
 from bs4 import BeautifulSoup
 from misc_helpers import get_sub_urls, load_xpath, init_logging, load_random_headers
 from scrape_helpers import previously_scraped
-
-
-def scrape_page(key, xpaths, url, finn_code):
-
-    result_dict = {
-        'finn_code': finn_code,
-        "key": key,
-        "url": url,
-        'scrape_time': datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-    }
-
-    r = requests.get(url, headers=HEADERS)
-
-    if r.status_code != 200:
-        logging.critical(f"RESPONSE CODE {r.status_code}")
-        
-
-    tree = etree.HTML(r.text)
-
-    if not xpaths:
-        logging.info("NO XPATHS")
-        logging.info(f'{key} URL: {url}')
-
-        entire_html = etree.tostring(tree, encoding='unicode')
-        result_dict["html"] = entire_html
-
-        return result_dict
-
-    text_xpaths = xpaths["text"]
-    html_xpaths = xpaths["html"]
-
-    for k, value in text_xpaths.items():
-        content = tree.xpath(value)
-        if not content:
-            result_dict[k] = None
-        else:
-            result_dict[k] = etree.tostring(content[0], method='text', encoding='unicode')
-
-    for k, value in html_xpaths.items():
-        content = tree.xpath(value)
-        if not content:
-            result_dict[k] = None
-        else:
-            result_dict[k] = etree.tostring(content[0], method='html', encoding='unicode')
-
-
-    if 'title' in result_dict:
-        logging.info(f'{key} TITLE: {result_dict["title"]}')
-    else:
-        logging.info(f'{key} URL: {url}')
-
-    return result_dict
+from scrape_functions import scrape_page
 
 
 def scrape_sub_url(curr_time, sub_url, scraped_codes):
@@ -106,7 +54,8 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
             key = re.search(pattern, url).group(2)
             xpath = load_xpath(key)
 
-            results = scrape_page(key, xpath, url, finn_code)
+            results = scrape_page(url=url, headers=HEADERS, scrape_key=key, 
+                                  xpaths=xpath, finn_code=finn_code)
 
             if not xpath:
                 key = 'other'
@@ -152,4 +101,5 @@ def main():
 if __name__ == "__main__":
     HEADERS = load_random_headers()
     BASE_URL = 'https://www.finn.no/'
+    
     main()
