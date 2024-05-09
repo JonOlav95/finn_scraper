@@ -106,7 +106,7 @@ def missing_xpath_keys(scrape_files):
     all_key_counts = {}
 
     for f in files:
-        df = pd.read_csv(f'scrapes/{f}')
+        df = pd.read_csv(f'finn/{f}')
 
         if df.empty:
             continue
@@ -165,7 +165,7 @@ def count_missing(scrape_files):
 
 
 def main():
-    finn_files = ['scrapes/' + s for s in os.listdir('scrapes')]
+    finn_files = ['finn/' + s for s in os.listdir('finn')]
     nav_files = ['nav/' + s for s in os.listdir('nav')]
 
     scrape_files = finn_files + nav_files

@@ -32,7 +32,7 @@ def main():
 
     filename = f'nav/nav_{curr_time}.csv'
 
-    scraped_urls = previously_scraped('nav', 'url', 30)
+    scraped_urls = previously_scraped(dirpath='nav', column='url', n_files=30)
 
     for page_number in range(100):
         url = f"{BASE_URL}/stillinger?from={page_number * 25}&published=now%2Fd"
@@ -74,7 +74,6 @@ def main():
         value_df.to_csv(filename, index=False, encoding='utf-8')
         
         time.sleep(random.uniform(2.5, 5.5))
-        page += 1
 
 
 if __name__ == "__main__":

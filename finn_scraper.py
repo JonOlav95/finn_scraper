@@ -73,7 +73,7 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
 
         # Write result to file
         for key in page_ads.keys():
-            filename = f'scrapes/{key}_{curr_time}.csv'
+            filename = f'finn/{key}_{curr_time}.csv'
             value_df = pd.DataFrame(page_ads[key])
 
             if os.path.isfile(filename):
@@ -91,14 +91,18 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
 
 def main():
     curr_time = datetime.today().strftime('%Y_%m_%d_%H_%M')
-    init_logging(f'logs/{curr_time}.log')
+    init_logging(f'logs/finn_{curr_time}.log')
 
     sub_urls = get_sub_urls()
 
     # Iterate the different subdomains used to scrape the daily ads
     for sub_url in sub_urls:
         logging.info(f'SCRAPING DOMAIN: {sub_url}')
-        scraped_codes = previously_scraped('scrapes', 'finn_code', 30)
+
+        scraped_codes = previously_scraped(dirpath='finn', 
+                                           column='finn_code', 
+                                           n_files=50)
+        
         scrape_sub_url(curr_time, sub_url, scraped_codes)
 
 

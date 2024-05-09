@@ -1,4 +1,5 @@
 import pandas as pd
+from lxml import etree
 
 from bs4 import BeautifulSoup
 
@@ -25,17 +26,41 @@ def divs_to_list(div_html):
 
     return keywords
 
+
+def func(value):
+
+    if not value:
+        return None
+    
+    elif isinstance(value, int):
+        return value
+
+    elif any(value.startswith(pre) for pre in ['<h1', '<h2', '<h3', '<h4', '<section', '<p']):
+        soup = BeautifulSoup(value, 'html.parser')
+
+        br_tags = soup.find_all('br')
+        br_tags = [br_tag.replace_with(' ') for br_tag in br_tags]
+
+        value = soup.get_text()
+        value = value.rstrip()
+
+    elif value.startswith('<dl'):
+        value = dl_to_dict(value)
+
+    return value
+
 def main():
-    # df = pd.read_csv("scrapes/fulltime_2024_05_05_18_53.csv")
-    df = pd.read_csv("scrapes/homes_2024_05_04_21_20.csv")
+    df = pd.read_csv("scrapes/positions_2024_05_09_18_06.csv")
+    # df = pd.read_csv("scrapes/homes_2024_05_04_21_20.csv")
 
-    tmp = df["facilities"].values[0]
-    #result = dl_to_dict(tmp)
-    result = divs_to_list(tmp)
+    columns = df.columns
+
+    for col in columns:
+        df[col] = df[col].apply(func)
 
 
+    print(df['definition_1'])
     return
-
 
 if __name__ == "__main__":
     main()
