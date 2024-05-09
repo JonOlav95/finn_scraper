@@ -15,7 +15,6 @@ from misc_helpers import load_random_headers, init_logging
 
 
 def main():
-
     xpaths = {
         'title': '//*[@id="main-content"]/article/div/h1',
         'company': '//*[@id="main-content"]/article/div/section[1]/div[1]/p',
@@ -34,20 +33,17 @@ def main():
     filename = f'nav/nav_{curr_time}.csv'
 
     scraped_urls = previously_scraped('nav', 'url', 30)
-    page = 0
 
-    while True:
-        url = f"{BASE_URL}/stillinger?from={page * 25}&published=now%2Fd"
+    for page_number in range(100):
+        url = f"{BASE_URL}/stillinger?from={page_number * 25}&published=now%2Fd"
 
         time.sleep(random.uniform(0.75, 1.5))
         r = requests.get(url, headers=HEADERS)
-        html_content = r.text
 
-        soup = BeautifulSoup(html_content, "html.parser")
+        soup = BeautifulSoup(r.text, "html.parser")
         a_tags = soup.find_all('a')
 
         all_urls = [u.get('href') for u in a_tags]
-        
         ad_urls = [u for u in all_urls if re.compile(r'(\/stillinger\/stilling\/.+)').search(u)]
 
         if not ad_urls:

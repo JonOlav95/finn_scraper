@@ -138,7 +138,7 @@ def load_xpath(key):
         'project': {
             'title': '//section[@data-testid="object-title"]//h1',
             'sub_title': '//section[@data-testid="object-title"]//h1',
-            'price_inciative': '//div[@data-testid="pricing-inciative-price"]//span[1]//span[2]',
+            'price_inciative': '//div[@data-testid="pricing-incicative-price"]//span[1]//span[2]',
             'facilities': '//section[@data-testid="object-facilities"]//div', # html
             'key_info': '//section[@data-testid="key-info"]//dl',
             'about': '//h2[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
