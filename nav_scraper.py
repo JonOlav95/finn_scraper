@@ -75,7 +75,8 @@ def main():
             value_df = pd.concat([scrape_df, value_df])
 
         value_df.to_csv(filename, index=False, encoding='utf-8')
-
+        
+        time.sleep(random.uniform(2.5, 5.5))
         page += 1
 
 

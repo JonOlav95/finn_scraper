@@ -73,8 +73,7 @@ def load_xpath(key):
         'key_info': '//section[@data-testid="key-info"]//dl', # html
         'facilities': '//section[@data-testid="object-facilities"]//div', # html
         'pricing_details': '//section[@data-testid="pricing-details"]//dl', #html 
-        
-    },
+    }
 
 
     default_work = {

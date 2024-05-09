@@ -43,6 +43,7 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
         for url in ad_urls:
 
             finn_code = re.compile(r'(?<=finnkode=)\d+').search(url).group(0)
+            finn_code = int(finn_code)
 
             if finn_code in scraped_codes:
                 logging.info(f'ALREADY SCRAPED: {url}')
