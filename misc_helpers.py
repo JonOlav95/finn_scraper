@@ -114,7 +114,7 @@ def load_xpath(key):
             'definition_1': "//div[@data-testid='aggregated-ad-object']//div[1]//dl[1]", # html
             'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]" # html
         
-       },
+        },
         'lettings': {
             'title': '//section[@data-testid="object-title"]//h1',
             'pricing_common_monthly_cost': '//div[@data-testid="pricing-common-monthly-cost"]//dd',
@@ -126,13 +126,69 @@ def load_xpath(key):
             'location': '//span[@data-testid="object-address"]'    
         },
 
-        'newbuildings': newbuildings,
-        'nybygg': newbuildings,
+        'planned': {
+            'title': '//section[@data-testid="object-title"]//h1',
+            'sub_title': '//section[@data-testid="object-title"]//h1',
+            'local_area_name': '//section[@data-testid="local-area-name"]',
+            'address': '//span[@data-testid="object-address"]',
+            'key_info': '//section[@data-testid="key-info"]//dl',
+            'about': '//h2[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
+        },
 
+        'project': {
+            'title': '//section[@data-testid="object-title"]//h1',
+            'sub_title': '//section[@data-testid="object-title"]//h1',
+            'price_inciative': '//div[@data-testid="pricing-inciative-price"]//span[1]//span[2]',
+            'facilities': '//section[@data-testid="object-facilities"]//div', # html
+            'key_info': '//section[@data-testid="key-info"]//dl',
+            'about': '//h2[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
+            'address': '//span[@data-testid="object-address"]',
+        },
+
+        'projectsingle': {
+            'title': '//section[@data-testid="object-title"]//h1',
+            'sub_title': '//section[@data-testid="object-title"]//h1',
+            'local_area_name': '//section[@data-testid="local-area-name"]',
+            'price_inciative': '//div[@data-testid="pricing-inciative-price"]//span[2]',
+            'price_details': '//section[@data-testid="pricing-details"]//dl',
+            'facilities': '//section[@data-testid="object-facilities"]//div', # html
+            'key_info': '//section[@data-testid="key-info"]//dl',
+            'about': '//h2[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
+            'address': '//span[@data-testid="object-address"]',
+        },
+
+        'projectleisure': {
+            'title': '//section[@data-testid="object-title"]//h1',
+            'sub_title': '//section[@data-testid="object-title"]//h1',
+            'local_area_name': '//section[@data-testid="local-area-name"]',
+            'price_inciative': '//div[@data-testid="pricing-inciative-price"]//span[2]',
+            'price_details': '//section[@data-testid="pricing-details"]//dl',
+            'facilities': '//section[@data-testid="object-facilities"]//div', # html
+            'key_info': '//section[@data-testid="key-info"]//dl',
+            'about': '//h2[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
+            'address': '//span[@data-testid="object-address"]',
+        },
+
+        'wanted': {
+            'title': '//section[@data-testid="object-title"]//h1',
+            'max_rent': '//div[@data-testid="letting-wanted-price"]//dd',
+            'key_info': '//section[@data-testid="key-info"]//dl',
+            'about': '//section[@data-testid="about-property"]'
+        },
+
+        'abroad': {
+            'title': '//section[@data-testid="object-title"]//h1',
+            'local_area_name': '//span[@data-testid="object-address"]',
+            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',
+            'about': '//section[@data-testid="about-property"]',
+            'location': '//span[@data-testid="object-address"]',
+            'key_info': '//section[@data-testid="key-info"]//dl', # html
+            'facilities': '//section[@data-testid="object-facilities"]//div', # html
+            'pricing_details': '//section[@data-testid="pricing-details"]//dl', #html 
+        },
+        
         'leisuresale': default_housing,
-        'abroad': default_housing,
         'plots': default_housing,
-        'wanted': default_housing,
         'businesssale': default_housing,
         'businessrent': default_housing,
         'businessplots': default_housing,

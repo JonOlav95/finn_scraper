@@ -22,6 +22,7 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
     for current_page in range(1, 50):
         logging.info(f'Scraping page {current_page}')
 
+        time.sleep(random.uniform(0.75, 1.5))
         r = requests.get(f'{domain_url}/search.html?page={current_page}&published=1', headers=HEADERS)
 
         html_content = r.text

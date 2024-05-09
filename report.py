@@ -26,7 +26,8 @@ def inspect_log_files(n_logs=10):
                     print(f"FILE {f}\nError or Critical found in line {line_number}: {line.strip()}")
                     errors_found += 1
 
-    print(f'ERRORS/CRITICALS (n_logs={n_logs}): {errors_found}')
+    if errors_found != 0:
+        print(f'ERRORS/CRITICALS (n_logs={n_logs}): {errors_found}')
 
 
 def create_scrape_timeseries(scrape_files):
@@ -96,11 +97,11 @@ def calculate_size(scrape_files):
     folder_size /= (1024 * 1024)
     folder_size = round(folder_size)
 
-    print(f'FOLDER SIZE: {folder_size} MB')
+    print(f'FOLDER SIZE: {folder_size} MB ({len(scrape_files)} files)')
 
 
-def missing_xpath_keys():
-    files = [f for f in os.listdir('scrapes') if f.startswith('other')]
+def missing_xpath_keys(scrape_files):
+    files = [f for f in scrape_files if 'other' in f]
     
     all_key_counts = {}
 
@@ -115,14 +116,10 @@ def missing_xpath_keys():
         key_count = [re.compile(r'(?<=finn\.no/)(.*?)(?=/ad)').search(u).group(0) for u in urls]
         key_count = dict(Counter(key_count))
 
-        for k, v in key_count.items():
-            if k in all_key_counts:
-                all_key_counts[k] += v
-            else:
-                all_key_counts[k] = v
+        all_key_counts = dict(Counter(all_key_counts) + Counter(key_count))
 
- 
-    print(f'MISSING KEYS (OTHER FILES): {all_key_counts}')
+    if all_key_counts:
+        print(f'MISSING XPATHS (OTHER FILES): {all_key_counts}')
 
 
 def count_none_nan(value):
@@ -140,14 +137,13 @@ def count_missing(scrape_files):
     scrape_files = sorted(scrape_files, key=extract_datetime)
     scrape_files = scrape_files[-100:]
 
-    fnames = []
     missing = {}
 
     for filename in scrape_files:
         df = pd.read_csv(filename)
         length = len(df.index)
 
-        if length < 10:
+        if length < 20:
             continue
         
         counts = df.isna().sum()
@@ -156,22 +152,16 @@ def count_missing(scrape_files):
         if 1 not in counts.values:
             continue
         
-        fnames.append(filename)
         counts = dict(counts)
         counts = [k for k, v in counts.items() if v==1]
-            
-        for k in counts:
-            if k in missing.keys():
-                missing[k] += 1
-            else:
-                missing[k] = 1
 
-    if not fnames:
+        missing[filename] = counts
+
+    if not missing:
         return
     
     print("--- 100% MISSING VALUES DETECTED ---")
-    print(f"FILENAMES: {fnames}")
-    print(f"COLUMNS: {missing}")
+    print(missing)
 
 
 def main():
@@ -187,7 +177,7 @@ def main():
     create_scrape_timeseries(scrape_files)
     inspect_log_files(n_logs=30)
     calculate_size(scrape_files)
-    missing_xpath_keys()
+    missing_xpath_keys(scrape_files)
     count_missing(scrape_files)
 
 

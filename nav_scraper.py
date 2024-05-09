@@ -39,6 +39,7 @@ def main():
     while True:
         url = f"{BASE_URL}/stillinger?from={page * 25}&published=now%2Fd"
 
+        time.sleep(random.uniform(0.75, 1.5))
         r = requests.get(url, headers=HEADERS)
         html_content = r.text
 
