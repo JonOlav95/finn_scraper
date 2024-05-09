@@ -4,6 +4,7 @@ import pandas as pd
 
 from datetime import datetime, timedelta
 from scrape_helpers import extract_datetime
+from collections import Counter
 
 
 def inspect_log_files(n_logs=10):
@@ -105,12 +106,14 @@ def missing_xpath_keys():
 
     for f in files:
         df = pd.read_csv(f'scrapes/{f}')
-        key_count = df['key'].value_counts()
 
-        if key_count.empty:
+        if df.empty:
             continue
-        
-        key_count = dict(key_count)
+
+        urls = df['url'].values
+
+        key_count = [re.compile(r'(?<=finn\.no/)(.*?)(?=/ad)').search(u).group(0) for u in urls]
+        key_count = dict(Counter(key_count))
 
         for k, v in key_count.items():
             if k in all_key_counts:
@@ -182,7 +185,7 @@ def main():
         return
 
     create_scrape_timeseries(scrape_files)
-    inspect_log_files()
+    inspect_log_files(n_logs=30)
     calculate_size(scrape_files)
     missing_xpath_keys()
     count_missing(scrape_files)
