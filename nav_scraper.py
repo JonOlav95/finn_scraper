@@ -27,7 +27,7 @@ def main():
         'ad_data': '//h2[contains(text(), "Annonsedata")]/../dl'
     }
 
-    curr_time = datetime.today().strftime('%Y_%m_%d_%H_%M')
+    curr_time = datetime.today().strftime('%Y_%m_%d')
     init_logging(f'logs/nav_{curr_time}.log')
 
     filename = f'nav/nav_{curr_time}.csv'
@@ -65,6 +65,9 @@ def main():
 
             time.sleep(random.uniform(0.75, 1.5))
 
+        if not ads:
+            continue
+        
         value_df = pd.DataFrame(ads)
 
         if os.path.isfile(filename):

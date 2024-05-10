@@ -1,13 +1,7 @@
-import os
-import re
 import pandas as pd
 
-from datetime import datetime
-from collections import defaultdict
-from lxml import etree
 from bs4 import BeautifulSoup
 
-from scrape_helpers import extract_datetime
 
 
 def dl_to_dict(dl_html):
