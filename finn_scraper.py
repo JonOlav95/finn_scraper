@@ -90,7 +90,7 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
 
 
 def main():
-    curr_time = datetime.today().strftime('%Y_%m_%d_%H_%M')
+    curr_time = datetime.today().strftime('%Y_%m_%d')
     init_logging(f'logs/finn_{curr_time}.log')
 
     sub_urls = get_sub_urls()

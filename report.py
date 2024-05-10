@@ -40,9 +40,10 @@ def create_scrape_timeseries(scrape_files):
         files_for_date = []
 
         for filename in scrape_files:
-
-            file_date = datetime.strptime('_'.join(os.path.basename(filename).split('_')[1:4]), '%Y_%m_%d')
-
+            
+            date_and_time = re.search(r'(\d{4}_\d{2}_\d{2})', filename)
+            file_date = datetime.strptime(date_and_time[0], '%Y_%m_%d')
+            
             if file_date == date:
                 files_for_date.append(filename)
 

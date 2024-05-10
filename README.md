@@ -11,6 +11,7 @@
 - [ ] Randomize headers.
 - [ ] FINN: Automatically extract missing sub urls (keys).
 - [ ] FINN: Scrape images for housing.
+- [ ] Armageddon.
 
 ### Xpaths
 - [ ] Verify default housing and default work is appropriate for all given urls.

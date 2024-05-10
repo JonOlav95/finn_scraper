@@ -1,7 +1,13 @@
+import os
+import re
 import pandas as pd
-from lxml import etree
 
+from datetime import datetime
+from collections import defaultdict
+from lxml import etree
 from bs4 import BeautifulSoup
+
+from scrape_helpers import extract_datetime
 
 
 def dl_to_dict(dl_html):
@@ -29,10 +35,7 @@ def divs_to_list(div_html):
 
 def func(value):
 
-    if not value:
-        return None
-    
-    elif isinstance(value, int):
+    if not isinstance(value, str):
         return value
 
     elif any(value.startswith(pre) for pre in ['<h1', '<h2', '<h3', '<h4', '<section', '<p']):
@@ -50,8 +53,9 @@ def func(value):
     return value
 
 def main():
-    df = pd.read_csv("scrapes/positions_2024_05_09_18_06.csv")
-    # df = pd.read_csv("scrapes/homes_2024_05_04_21_20.csv")
+    # df = pd.read_csv("finn/positions_2024_05_09_18_06.csv")
+    # df = pd.read_csv("finn/homes_2024_05_04_21_20.csv")
+    df = pd.read_csv("nav/nav_2024_05_09_18_34.csv")
 
     columns = df.columns
 
@@ -59,7 +63,6 @@ def main():
         df[col] = df[col].apply(func)
 
 
-    print(df['definition_1'])
     return
 
 if __name__ == "__main__":
