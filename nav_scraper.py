@@ -55,6 +55,7 @@ def main():
             url = BASE_URL + url
             
             if url in scraped_urls:
+                print(f'ALREADY SCRAPED: {url}')
                 continue
 
             scraped_urls.append(url)
