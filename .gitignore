@@ -7,6 +7,9 @@ housing/
 realestate/
 scrapes/
 nav/
+selenium_scraper/
+finn/
+
 
 parameters.yml
 finn_metadata.csv
