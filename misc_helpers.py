@@ -102,7 +102,7 @@ def housing_xpaths(key):
     facilities = {'facilities': '//section[@data-testid="object-facilities"]//div'}
     pricing_details = {'pricing_details': '//section[@data-testid="pricing-details"]//dl'}
     pricing_indicative = {'pricing_inciactive': '//div[contains(@data-testid, "pricing-indicative-price") \
-                          or contains(@data-testid, "pricing-inciactive")]//span[2]'}
+                          or contains(@data-testid, "pricing-inciactive-price")]//span[2]'}
     
     # Uncommon xpaths
     sub_title = {'sub_title': '//section[@data-testid="object-title"]//h1'}
@@ -216,13 +216,8 @@ def load_xpath(key):
 
 def get_sub_urls():
     return [
-        'job/fulltime',
         'realestate/homes',
-        'job/parttime',
-        'job/management',
-
         'realestate/newbuildings',
-        
         'realestate/plots',
         'realestate/leisureplots',
         'realestate/lettings',
@@ -233,4 +228,8 @@ def get_sub_urls():
         'realestate/businessrent',
         'realestate/businessplots',
         'realestate/companyforsale',
+
+        'job/fulltime',
+        'job/parttime',
+        'job/management',
     ]

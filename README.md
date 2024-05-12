@@ -16,5 +16,5 @@
 
 
 ### Xpaths
-- [ ] Verify default housing and default work is appropriate for all given urls.
-- [ ] Xpath for newbuildings.
+- [x] Verify default housing and default work is appropriate for all given urls.
+- [x] Xpath for newbuildings.
