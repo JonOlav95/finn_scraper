@@ -25,6 +25,10 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
         time.sleep(random.uniform(0.75, 1.5))
         r = requests.get(f'{domain_url}/search.html?page={page_number}&published=1', headers=HEADERS)
 
+        if r.status_code != 200:
+            logging.critical(f"ITERATE PAGE RESPONSE CODE {r.status_code}, URL: {url}")
+            continue
+
         soup = BeautifulSoup(r.text, "html.parser")
         a_tags = soup.find_all("a")
 

@@ -61,21 +61,8 @@ def load_flags():
 
 
 
-def load_xpath(key):
-
-    default_housing = {
-        'title': '//section[@data-testid="object-title"]//h1',
-        'local_area_name': '//span[@data-testid="object-address"]',
-        'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',
-        'about': '//section[@data-testid="about-property"]',
-        'location': '//span[@data-testid="object-address"]',
-        'cadastreinfo_part': '//h2[@id="cadastreinfo-part"]/following-sibling::div[1]', # html
-        'key_info': '//section[@data-testid="key-info"]//dl', # html
-        'facilities': '//section[@data-testid="object-facilities"]//div', # html
-        'pricing_details': '//section[@data-testid="pricing-details"]//dl', #html 
-    }
-
-
+def work_xpaths(key):
+    
     default_work = {
         'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]//h1",
         'content': "//div[@class='import-decoration']//section",
@@ -83,31 +70,7 @@ def load_xpath(key):
         'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]//dl", # html
         'definition_2': "//dl[@class='definition-list definition-list--inline']", # html
     }
-
-    newbuildings = {
-        'title': '//h1[@class="mb-16 text-34"]',
-        'sub_title': '//h2[@class="mb-16 text-22"]',
-        'stpe': '//div[@class=" w-full flex"]',
-        'price': '//p[contains(text(), "Pris")]/following-sibling::p[1]',
-        'total_price': '//p[contains(text(), "Totalpris")]/following-sibling::p[1]',
-        'joint_debt': '//p[contains(text(), "Fellesgjeld")]/following-sibling::p[1]',
-        'local_area_name': '//svg[@alt="Beliggenhet ikon"]/following-sibling::p[1]',
-        'keywords': "//h3[contains(text(),'Nøkkelord') or contains(text(), 'Nøkkelinfo')]/following-sibling::div[1]",
-        'short_about': '//h3[contains(text(), "Kort om prosjektet")]/following-sibling::p[1]',
-        'facilities': '//h3[contains(text(),"Fasiliteter")]/following-sibling::div[1]',
-        'units_in_project': '//table[@class="w-full"]',
-        'about': '//h3[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
-        'location': '//h3[@id="beliggenhet"]/following-sibling::div[1]'
-    }
-
     xpaths = {
-        "homes": {
-            'cadastreinfo_part': '//h2[@id="cadastreinfo-part"]/following-sibling::div[1]', # html
-            'key_info': '//section[@data-testid="key-info"]//dl', # html
-            'facilities': '//section[@data-testid="object-facilities"]//div', # html
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl', # html
-        },
-
         'positions': {
             'title': "//div[@data-testid='aggregated-ad-object']//div[1]//h1[1]",
             'content': "//div[@data-testid='aggregated-ad-object']//div[1]//section[1]",
@@ -115,85 +78,7 @@ def load_xpath(key):
             'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]" # html
         
         },
-        'lettings': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'pricing_common_monthly_cost': '//div[@data-testid="pricing-common-monthly-cost"]//dd',
-            'pricing_depositum': '//div[@data-testid="pricing-deposit"]//dd',
-            'pricing_common_includes': '//div[@data-testid="pricing-common-includes"]//dd',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]'    
-        },
-
-        'planned': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'sub_title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//section[@data-testid="local-area-name"]',
-            'address': '//span[@data-testid="object-address"]',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'about': '//h2[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
-        },
-
-        'project': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'sub_title': '//section[@data-testid="object-title"]//h1',
-            'price_inciative': '//div[@data-testid="pricing-incicative-price"]//span[1]//span[2]',
-            'facilities': '//section[@data-testid="object-facilities"]//div', # html
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'about': '//h2[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
-            'address': '//span[@data-testid="object-address"]',
-        },
-
-        'projectsingle': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'sub_title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//section[@data-testid="local-area-name"]',
-            'price_inciative': '//div[@data-testid="pricing-inciative-price"]//span[2]',
-            'price_details': '//section[@data-testid="pricing-details"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div', # html
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'about': '//h2[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
-            'address': '//span[@data-testid="object-address"]',
-        },
-
-        'projectleisure': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'sub_title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//section[@data-testid="local-area-name"]',
-            'price_inciative': '//div[@data-testid="pricing-inciative-price"]//span[2]',
-            'price_details': '//section[@data-testid="pricing-details"]//dl',
-            'facilities': '//section[@data-testid="object-facilities"]//div', # html
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'about': '//h2[contains(text(),"Beskrivelse")]/following-sibling::div[1]',
-            'address': '//span[@data-testid="object-address"]',
-        },
-
-        'wanted': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'max_rent': '//div[@data-testid="letting-wanted-price"]//dd',
-            'key_info': '//section[@data-testid="key-info"]//dl',
-            'about': '//section[@data-testid="about-property"]'
-        },
-
-        'abroad': {
-            'title': '//section[@data-testid="object-title"]//h1',
-            'local_area_name': '//span[@data-testid="object-address"]',
-            'pricing_inciactive': '//div[@data-testid="pricing-indicative-price"]//span[2]',
-            'about': '//section[@data-testid="about-property"]',
-            'location': '//span[@data-testid="object-address"]',
-            'key_info': '//section[@data-testid="key-info"]//dl', # html
-            'facilities': '//section[@data-testid="object-facilities"]//div', # html
-            'pricing_details': '//section[@data-testid="pricing-details"]//dl', #html 
-        },
         
-        'leisuresale': default_housing,
-        'plots': default_housing,
-        'businesssale': default_housing,
-        'businessrent': default_housing,
-        'businessplots': default_housing,
-        'companyforsale': default_housing,
-
         'fulltime': default_work,
         'management': default_work,
         'parttime': default_work,
@@ -205,13 +90,136 @@ def load_xpath(key):
     return xpaths[key]
 
 
+def housing_xpaths(key):
+
+    # Common xpaths
+    title = {'title': '//section[@data-testid="object-title"]//h1'}
+    local_area_name = {'local_area_name': '//div[@data-testid="local-area-name"]'}
+    about = {'about': '//section[@data-testid="about-property"]'}
+    address = {'address': '//span[@data-testid="object-address"]'}
+    cadastreinfo_part = {'cadastreinfo_part': '//h2[@id="cadastreinfo-part"]/following-sibling::div[1]'}
+    key_info = {'key_info': '//section[@data-testid="key-info"]//dl'}
+    facilities = {'facilities': '//section[@data-testid="object-facilities"]//div'}
+    pricing_details = {'pricing_details': '//section[@data-testid="pricing-details"]//dl'}
+    pricing_indicative = {'pricing_inciactive': '//div[contains(@data-testid, "pricing-indicative-price") \
+                          or contains(@data-testid, "pricing-inciactive")]//span[2]'}
+    
+    # Uncommon xpaths
+    sub_title = {'sub_title': '//section[@data-testid="object-title"]//h1'}
+
+    default_housing = {
+        **title,
+        **local_area_name,
+        **pricing_indicative,
+        **about,
+        **address,
+        **cadastreinfo_part,
+        **key_info,
+        **pricing_details,
+        **facilities 
+    }
+
+    xpaths = {
+        'lettings': {
+            **title,
+            **key_info,
+            **address,  
+            **facilities,
+            **about,
+            **pricing_details
+        },
+
+        'planned': {
+            **title,
+            **key_info,
+            **address,
+            **about,
+            **sub_title
+        },
+
+        'project': {
+            **title,
+            **key_info,
+            **address,
+            **about,
+            **facilities,
+            **sub_title,
+            'pricing_indicative': '//div[@data-testid="pricing-incicative-price"]//span[1]//span[2]', # Different structure
+        },
+
+        'projectsingle': {
+            **title,
+            **key_info,
+            **address,
+            **about,
+            **facilities,
+            **sub_title,
+            **pricing_details,
+            **local_area_name,
+            **pricing_indicative
+        },
+
+        'projectleisure': {
+            **title,
+            **key_info,
+            **address,
+            **about,
+            **facilities,
+            **sub_title,
+            **pricing_details,
+            **local_area_name,
+            **pricing_indicative,
+        },
+
+        'wanted': {
+            **title,
+            **key_info,
+            **about,
+            'max_rent': '//div[@data-testid="letting-wanted-price"]//dd',
+        },
+
+        'abroad': {
+            **title,
+            **key_info,
+            **address,
+            **about,
+            **facilities,
+            **pricing_indicative,
+            **pricing_details,
+        },
+
+
+        "homes": default_housing,
+        'leisuresale': default_housing,
+        'plots': default_housing,
+        'businesssale': default_housing,
+        'businessrent': default_housing,
+        'businessplots': default_housing,
+        'companyforsale': default_housing
+    }
+    
+    if key not in xpaths.keys():
+        return None
+
+    return xpaths[key]
+
+
+
+
+def load_xpath(key):
+
+    if key in ['fulltime', 'positions', 'management', 'parttime']:
+        return work_xpaths(key)
+    
+    return housing_xpaths(key)
+
 
 def get_sub_urls():
     return [
         'job/fulltime',
+        'realestate/homes',
         'job/parttime',
         'job/management',
-        'realestate/homes',
 
         'realestate/newbuildings',
         

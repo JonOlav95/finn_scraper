@@ -9,7 +9,7 @@ def scrape_page(url, xpaths, scrape_key, headers, **kwargs):
     r = requests.get(url, headers=headers)
 
     if r.status_code != 200:
-        logging.critical(f"RESPONSE CODE {r.status_code}")
+        logging.critical(f"SCRAPE PAGE RESPONSE CODE {r.status_code}, URL: {url}")
         return
     
     tree = etree.HTML(r.text)

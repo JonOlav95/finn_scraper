@@ -23,7 +23,7 @@ def inspect_log_files(n_logs=10):
 
                 # Use the pattern to search for matches in the line
                 if error_pattern.search(line) or critical_pattern.search(line):
-                    print(f"FILE {f}\nError or Critical found in line {line_number}: {line.strip()}")
+                    print(f"FILE {f}:\nError or Critical found in line {line_number}: {line.strip()}")
                     errors_found += 1
 
     if errors_found != 0:
