@@ -77,6 +77,10 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
 
         # Write result to file
         for key in page_ads.keys():
+            
+            if not page_ads[key]:
+                continue
+
             filename = f'finn/{key}_{curr_time}.csv'
             value_df = pd.DataFrame(page_ads[key])
 

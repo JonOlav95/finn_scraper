@@ -101,8 +101,8 @@ def housing_xpaths(key):
     key_info = {'key_info': '//section[@data-testid="key-info"]//dl'}
     facilities = {'facilities': '//section[@data-testid="object-facilities"]//div'}
     pricing_details = {'pricing_details': '//section[@data-testid="pricing-details"]//dl'}
-    pricing_indicative = {'pricing_inciactive': '//div[contains(@data-testid, "pricing-indicative-price") \
-                          or contains(@data-testid, "pricing-inciactive-price")]//span[2]'}
+    pricing_indicative = {'pricing_indicative': '//div[contains(@data-testid, "pricing-indicative-price") \
+                          or contains(@data-testid, "pricing-incicative-price")]//span[2]'}
     
     # Uncommon xpaths
     sub_title = {'sub_title': '//section[@data-testid="object-title"]//h1'}
