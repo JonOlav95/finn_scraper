@@ -1,6 +1,5 @@
 import logging
 import os
-import re
 import sys
 import yaml
 
@@ -20,7 +19,6 @@ def load_random_headers():
         'user-agent=Mozilla/5.0 (X11; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0',
         'user-agent=Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0',
     ]
-
 
     headers = {
         "User-Agent": choice(user_agents),
