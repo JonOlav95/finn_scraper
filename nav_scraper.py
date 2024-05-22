@@ -1,8 +1,8 @@
-import requests
-import re
-import random
-import time
 import os
+import re
+import time
+import requests
+import random
 import logging
 import pandas as pd
 
