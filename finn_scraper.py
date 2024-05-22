@@ -1,7 +1,7 @@
 import os
 import re
-import random
 import time
+import random
 import logging
 import pandas as pd
 import requests
