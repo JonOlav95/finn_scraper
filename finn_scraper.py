@@ -1,6 +1,6 @@
 import os
-import random
 import re
+import random
 import time
 import logging
 import pandas as pd
