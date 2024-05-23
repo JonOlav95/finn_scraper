@@ -3,8 +3,8 @@ import re
 import time
 import random
 import logging
-import pandas as pd
 import requests
+import pandas as pd
 
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -13,9 +13,8 @@ from scrape_helpers import previously_scraped
 from scrape_functions import scrape_page
 
 
-def scrape_sub_url(curr_time, sub_url, scraped_codes):
+def scrape_sub_url(curr_time, scraped_codes, base_url, toggle, headers):
 
-    domain_url = BASE_URL + sub_url
     pattern = re.compile(r'finn\.no/(\w+)/(\w+)')
 
     # Iterate every page until the maximum of 50
@@ -23,7 +22,9 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
         logging.info(f'Scraping page {page_number}')
 
         time.sleep(random.uniform(0.75, 1.5))
-        r = requests.get(f'{domain_url}/search.html?page={page_number}&published=1', headers=HEADERS)
+
+        url = f'{base_url}/search.html?page={page_number}&{toggle}'
+        r = requests.get(url, headers=headers)
 
         if r.status_code != 200:
             logging.critical(f"ITERATE PAGE RESPONSE CODE {r.status_code}, URL: {url}")
@@ -62,7 +63,7 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
             key = re.search(pattern, url).group(2)
             xpath = load_xpath(key)
 
-            results = scrape_page(url=url, headers=HEADERS, scrape_key=key, 
+            results = scrape_page(url=url, headers=headers, scrape_key=key, 
                                   xpaths=xpath, finn_code=finn_code)
 
             if not xpath:
@@ -90,8 +91,7 @@ def scrape_sub_url(curr_time, sub_url, scraped_codes):
 
             value_df.to_csv(filename, index=False, encoding='utf-8')
     
-        if f'?published=1&page={page_number + 1}' not in page_urls:
-            logging.info(f'FINISHED SCRAPING {sub_url}.')
+        if f'page={page_number + 1}' not in '\t'.join(page_urls):
             return
 
         time.sleep(random.uniform(2.5, 5.5))
@@ -102,6 +102,8 @@ def main():
     init_logging(f'logs/finn_{curr_time}.log')
 
     sub_urls = get_sub_urls()
+    daily_toggle = 'published=1'
+    headers = load_random_headers()
 
     # Iterate the different subdomains used to scrape the daily ads
     for sub_url in sub_urls:
@@ -111,11 +113,12 @@ def main():
                                            column='finn_code', 
                                            n_files=50)
         
-        scrape_sub_url(curr_time, sub_url, scraped_codes)
+        base_url = 'https://www.finn.no/' + sub_url
+        
+        scrape_sub_url(curr_time, scraped_codes, base_url, daily_toggle, headers)
+        logging.info(f'FINISHED SCRAPING {sub_url}.')
 
 
 if __name__ == "__main__":
-    HEADERS = load_random_headers()
-    BASE_URL = 'https://www.finn.no/'
     
     main()

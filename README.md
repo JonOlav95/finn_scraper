@@ -11,6 +11,8 @@
 - [x] FINN: Automatically extract missing sub urls (keys).
 - [ ] FINN: Scrape images for housing.
 - [ ] Armageddon.
+- [ ] Referer not  from google (header).
+- [ ] Param file for sleep timers.
 
 ### Xpaths
 - [x] Verify default housing and default work is appropriate for all given urls.
