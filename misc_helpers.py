@@ -23,8 +23,7 @@ def load_random_headers():
     headers = {
         "User-Agent": choice(user_agents),
         "Accept-Language": "en-GB,en,q=0.5",
-        "Referer": "https://google.com",
-        "DNT": "1"
+        "Referer": "https://google.com"
     }
 
     return headers
@@ -202,9 +201,26 @@ def housing_xpaths(key):
     return xpaths[key]
 
 
+def nav_xpaths():
+    xpaths = {
+        'title': '//*[@id="main-content"]/article/div/h1',
+        'company': '//*[@id="main-content"]/article/div/section[1]/div[1]/p',
+        'location': '//*[@id="main-content"]/article/div/section[1]/div[2]/p',
+        'job_content': '//div[contains(@class, "job-posting-text")]',
+        'employer': '//h2[contains(text(), "Om bedriften")]/../div',
+        'deadline': '//h2[contains(text(), "Søk på jobben")]/../p',
+        'about': '//h2[contains(text(), "Om jobben")]/../../dl',
+        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen") or contains(text(), "Kontaktpersoner for stillingen")]/..',
+        'ad_data': '//h2[contains(text(), "Annonsedata")]/../dl'
+    }
+
+    return xpaths
 
 
 def load_xpath(key):
+
+    if key == 'nav':
+        return nav_xpaths()
 
     if key in ['fulltime', 'positions', 'management', 'parttime']:
         return work_xpaths(key)
