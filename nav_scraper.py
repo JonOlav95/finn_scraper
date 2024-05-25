@@ -1,91 +1,40 @@
-import os
+
 import re
-import time
-import requests
-import random
 import logging
-import pandas as pd
 
 from datetime import datetime
-from bs4 import BeautifulSoup
 
 from scrape_helpers import previously_scraped
-from scrape_functions import scrape_single_page
+from scrape_functions import scrape_pages
 from misc_helpers import load_random_headers, init_logging
 
 
 def main():
-    xpaths = {
-        'title': '//*[@id="main-content"]/article/div/h1',
-        'company': '//*[@id="main-content"]/article/div/section[1]/div[1]/p',
-        'location': '//*[@id="main-content"]/article/div/section[1]/div[2]/p',
-        'job_content': '//div[contains(@class, "job-posting-text")]',
-        'employer': '//h2[contains(text(), "Om bedriften")]/../div',
-        'deadline': '//h2[contains(text(), "Søk på jobben")]/../p',
-        'about': '//h2[contains(text(), "Om jobben")]/../../dl',
-        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen") or contains(text(), "Kontaktpersoner for stillingen")]/..',
-        'ad_data': '//h2[contains(text(), "Annonsedata")]/../dl'
-    }
-
     curr_time = datetime.today().strftime('%Y_%m_%d')
+    folder = 'nav'
+    headers = load_random_headers()
+
+    key_pattern = re.compile(r'nav')
+    page_pattern = re.compile(r'from=\d+')
+    ad_pattern = re.compile(r'(\/stillinger\/stilling\/.+)')
+    id_pattern = re.compile(r'[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}')
+
+    base_url = 'https://arbeidsplassen.nav.no'
+    daily_toggle = '&published=now%2Fd'
     init_logging(f'logs/nav_{curr_time}.log')
 
-    filename = f'nav/nav_{curr_time}.csv'
+    logging.info(f'SCRAPING NAV')
 
     scraped_urls = previously_scraped(dirpath='nav', column='url', n_files=30)
+    page_iterator = lambda p : f'{base_url}/stillinger?from={p + 25}{daily_toggle}'
+    
+    scrape_pages(curr_time, folder, headers, page_iterator, scraped_urls,
+                    page_pattern, ad_pattern, key_pattern, id_pattern,
+                    base_url=base_url)
+    
+    logging.info(f'FINISHED SCRAPING NAV')
 
-    for page_number in range(100):
-        url = f"{BASE_URL}/stillinger?from={page_number * 25}&published=now%2Fd"
-
-        time.sleep(random.uniform(0.75, 1.5))
-        r = requests.get(url, headers=HEADERS)
-
-        if r.status_code != 200:
-            logging.critical(f"ITERATE PAGE RESPONSE CODE {r.status_code}, URL: {url}")
-            continue
-
-        soup = BeautifulSoup(r.text, "html.parser")
-        a_tags = soup.find_all('a')
-
-        all_urls = [u.get('href') for u in a_tags]
-        ad_urls = [u for u in all_urls if re.compile(r'(\/stillinger\/stilling\/.+)').search(u)]
-
-        if not ad_urls:
-            return
-        
-        ads = []
-
-        for url in ad_urls:
-            url = BASE_URL + url
-            
-            if url in scraped_urls:
-                print(f'ALREADY SCRAPED: {url}')
-                continue
-
-            scraped_urls.append(url)
-
-            result = scrape_single_page(xpaths=xpaths, url=url, scrape_key='nav', headers=HEADERS)
-
-            ads.append(result)
-
-            time.sleep(random.uniform(0.75, 1.5))
-
-        if not ads:
-            continue
-        
-        value_df = pd.DataFrame(ads)
-
-        if os.path.isfile(filename):
-            scrape_df = pd.read_csv(filename, encoding='utf-8')
-            value_df = pd.concat([scrape_df, value_df])
-
-        value_df.to_csv(filename, index=False, encoding='utf-8')
-        
-        time.sleep(random.uniform(2.5, 5.5))
 
 
 if __name__ == "__main__":
-    HEADERS = load_random_headers()
-    BASE_URL = "https://arbeidsplassen.nav.no"
-
     main()

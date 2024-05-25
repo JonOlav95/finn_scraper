@@ -1,8 +1,3 @@
-import requests
-import logging
-
-from datetime import datetime
-from lxml import etree
 import os
 import re
 import time
@@ -11,14 +6,10 @@ import logging
 import requests
 import pandas as pd
 
+from lxml import etree
 from datetime import datetime
 from bs4 import BeautifulSoup
-from misc_helpers import get_sub_urls, load_xpath, init_logging, load_random_headers
-from scrape_helpers import previously_scraped
-from scrape_functions import scrape_single_page
-
-
-
+from misc_helpers import load_xpath
 
 
 def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
@@ -63,17 +54,18 @@ def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
     return result_dict
 
 
-
 def scrape_pages(curr_time,
-                    folder,
-                    headers,
-                    page_iterator,
-                    previously_scraped,
-                    page_pattern,
-                    ad_pattern,
-                    xpath_key_pattern,
-                    id_pattern):
+                 folder,
+                 headers,
+                 page_iterator,
+                 previously_scraped,
+                 page_pattern,
+                 ad_pattern,
+                 xpath_key_pattern,
+                 id_pattern,
+                 base_url=None):
     
+
     for page_number in range(100):
         logging.info(f'SCRAPING PAGE {page_number}')
 
@@ -92,7 +84,6 @@ def scrape_pages(curr_time,
         all_urls = [u.get('href') for u in a_tags]
 
         ad_urls = [u for u in all_urls if ad_pattern.search(u)]
-        page_urls = [u for u in all_urls if page_pattern.search(u)]
 
         if not ad_urls:
             logging.info('NO ADS ON PAGE')
@@ -101,6 +92,10 @@ def scrape_pages(curr_time,
         page_ads = {}
 
         for url in ad_urls:
+
+            if base_url:
+                url = base_url + url
+
             idx = id_pattern.search(url).group(0)
 
             if idx in previously_scraped:
@@ -108,8 +103,8 @@ def scrape_pages(curr_time,
             
             previously_scraped.append(idx)
 
-            #TODO
-            xpath_key = re.search(xpath_key_pattern, url).group(2)
+            #TODO group 2 for finn
+            xpath_key = xpath_key_pattern.findall(url)[0]
             xpaths = load_xpath(xpath_key)
             
             if not xpaths:
@@ -138,6 +133,9 @@ def scrape_pages(curr_time,
 
             value_df.to_csv(filename, index=False, encoding='utf-8')
 
+
+        # TODO OPTIMIZE
+        page_urls = [u for u in all_urls if page_pattern.search(u)]
         if f'page={page_number + 1}' not in '\t'.join(page_urls):
             return
         
