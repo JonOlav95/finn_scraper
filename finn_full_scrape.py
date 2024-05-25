@@ -1,6 +1,6 @@
 import requests
+import logging
 from bs4 import BeautifulSoup
-from lxml import etree
 from datetime import datetime
 
 from misc_helpers import get_sub_urls, load_xpath, init_logging, load_random_headers
@@ -13,7 +13,7 @@ def main():
     sub_urls = get_sub_urls()
     curr_time = datetime.today().strftime('%Y_%m_%d')
     headers = load_random_headers()
-    BASE_URL = 'https://www.finn.no/'
+    base_url = 'https://www.finn.no/'
 
     curr_time = datetime.today().strftime('%Y_%m_%d')
     init_logging(f'logs/finn_{curr_time}.log')
@@ -24,7 +24,7 @@ def main():
                                            n_files=50)
         
 
-        url = f'{BASE_URL}{sub_url}/search.html'
+        url = f'{base_url}{sub_url}/search.html'
         r = requests.get(url, headers=headers)
 
         soup = BeautifulSoup(r.text, "html.parser")
@@ -33,9 +33,9 @@ def main():
         toggles = [u.get("id") for u in toggle_inputs]
 
         for t in toggles:
-            print(f"scraping {sub_url} with {t}")
-            scrape_sub_url(curr_time, scraped_codes, BASE_URL + sub_url, t, headers)
-            print("finished scraping")
+            logging.info(f'Scraping {sub_url} with {t}')
+            scrape_sub_url(curr_time, scraped_codes, base_url + sub_url, t, headers)
+            logging.info(f'Finished scraping {sub_url} with {t}')
 
 
 
