@@ -10,7 +10,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 
 from scrape_helpers import previously_scraped
-from scrape_functions import scrape_page
+from scrape_functions import scrape_single_page
 from misc_helpers import load_random_headers, init_logging
 
 
@@ -64,7 +64,7 @@ def main():
 
             scraped_urls.append(url)
 
-            result = scrape_page(xpaths=xpaths, url=url, scrape_key='nav', headers=HEADERS)
+            result = scrape_single_page(xpaths=xpaths, url=url, scrape_key='nav', headers=HEADERS)
 
             ads.append(result)
 

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from misc_helpers import get_sub_urls, load_xpath, init_logging, load_random_headers
 from scrape_helpers import previously_scraped
-from scrape_functions import scrape_page
+from scrape_functions import scrape_single_page
 from finn_scraper import scrape_sub_url
 
 

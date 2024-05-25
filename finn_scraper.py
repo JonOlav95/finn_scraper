@@ -6,12 +6,11 @@ import logging
 import requests
 import pandas as pd
 
-from generalized import scrape_iterator
 from datetime import datetime
 from bs4 import BeautifulSoup
 from misc_helpers import get_sub_urls, load_xpath, init_logging, load_random_headers
 from scrape_helpers import previously_scraped
-from scrape_functions import scrape_page
+from scrape_functions import scrape_single_page, scrape_pages
 
 
 def scrape_sub_url(curr_time, scraped_codes, base_url, toggle, headers):
@@ -67,7 +66,7 @@ def scrape_sub_url(curr_time, scraped_codes, base_url, toggle, headers):
             key = re.search(key_pattern, url).group(2)
             xpath = load_xpath(key)
 
-            results = scrape_page(url=url, headers=headers, scrape_key=key, 
+            results = scrape_single_page(url=url, headers=headers, scrape_key=key, 
                                   xpaths=xpath, finn_code=finn_code)
 
             if not xpath:
@@ -116,7 +115,7 @@ def main():
     sub_urls = get_sub_urls()
 
     init_logging(f'logs/finn_{curr_time}.log')
-    
+
     # Iterate the different subdomains used to scrape the daily ads
     for sub_url in sub_urls:
         logging.info(f'SCRAPING DOMAIN: {sub_url}')
@@ -127,7 +126,7 @@ def main():
 
         page_iterator = lambda p : f'{base_url}/{sub_url}/search.html?page={p + 1}{daily_toggle}'
         
-        scrape_iterator(curr_time, folder, headers, page_iterator, scraped_codes,
+        scrape_pages(curr_time, folder, headers, page_iterator, scraped_codes,
                         page_pattern, ad_pattern, key_pattern, id_pattern)
         
         logging.info(f'FINISHED SCRAPING {sub_url}.')
