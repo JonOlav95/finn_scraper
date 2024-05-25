@@ -12,6 +12,20 @@ from bs4 import BeautifulSoup
 from misc_helpers import load_xpath
 
 
+
+def store_data(page_ads, folder, curr_time):
+    for xpath_key in page_ads.keys():
+        
+        filename = f'{folder}/{xpath_key}_{curr_time}.csv'
+        value_df = pd.DataFrame(page_ads[xpath_key])
+
+        if os.path.isfile(filename):
+            scrape_df = pd.read_csv(filename, encoding='utf-8')
+            value_df = pd.concat([scrape_df, value_df])
+
+        value_df.to_csv(filename, index=False, encoding='utf-8')
+
+
 def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
     r = requests.get(url, headers=headers)
 
@@ -122,17 +136,7 @@ def scrape_pages(curr_time,
 
             time.sleep(random.uniform(0.75, 1.5))
 
-        for xpath_key in page_ads.keys():
-            
-            filename = f'{folder}/{xpath_key}_{curr_time}.csv'
-            value_df = pd.DataFrame(page_ads[xpath_key])
-
-            if os.path.isfile(filename):
-                scrape_df = pd.read_csv(filename, encoding='utf-8')
-                value_df = pd.concat([scrape_df, value_df])
-
-            value_df.to_csv(filename, index=False, encoding='utf-8')
-
+        store_data(page_ads, folder, curr_time)
 
         # TODO OPTIMIZE
         page_urls = [u for u in all_urls if page_pattern.search(u)]
@@ -141,4 +145,3 @@ def scrape_pages(curr_time,
         
         time.sleep(random.uniform(2.5, 5.5))
 
-        
