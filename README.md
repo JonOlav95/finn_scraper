@@ -34,3 +34,4 @@ all the different sub urls.
 - [ ] Custom queries instead of binary daily/not daily scrape.
 - [ ] Reduce line length across project.
 - [ ] Checking if all requests yields code 200.
+- [ ] Process data function for html->text.
