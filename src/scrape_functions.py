@@ -58,9 +58,10 @@ def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
         **kwargs
     }
 
+    # If no xpath is found, scrape the entire HTML.
     if not xpaths:
         logging.info("NO XPATHS")
-        logging.info(f'{scrape_key} URL: {url}')
+        logging.info(f'{scrape_key} URL: {url}') 
 
         entire_html = etree.tostring(tree, encoding='unicode')
         result_dict["html"] = entire_html
@@ -110,7 +111,7 @@ def iterate_pages(curr_time,
     for page_number in range(100):
         logging.info(f'SCRAPING PAGE {page_number + 1}')
 
-        time.sleep(random.uniform(0.75, 1.5))
+        time.sleep(random.uniform(2.5, 5.5))
 
         url = page_iterator(page_number)
         r = requests.get(url, headers=headers)
@@ -138,20 +139,29 @@ def iterate_pages(curr_time,
         for url in ad_urls:
             idx = id_pattern.search(url).group(0)
 
+            # Check if ad has been scraped before.
             if idx in scraped_codes:
                 continue
 
             scraped_codes.append(idx)
 
+            # Search for the correct xpaths given the 'xpath key'
+            # which is identified by the url.
             xpath_key = xpath_key_pattern.findall(url)[0]
             xpaths = load_xpath(xpath_key)
 
             if not xpaths:
                 xpath_key = 'other'
 
-            result = scrape_single_page(url=url, headers=headers, scrape_key=xpath_key,
-                                        xpaths=xpaths, idx=idx)
+            result = scrape_single_page(url=url,
+                                        headers=headers,
+                                        scrape_key=xpath_key,
+                                        xpaths=xpaths, 
+                                        idx=idx)
 
+            # Store the ad temporarliy in a dictionary. A finn page
+            # may contain ads of different type. E.g. 'home' ads may contain
+            # 'project' ads.
             if xpath_key in page_ads.keys():
                 page_ads[xpath_key].append(result)
             else:
@@ -160,5 +170,3 @@ def iterate_pages(curr_time,
             time.sleep(random.uniform(0.75, 1.5))
 
         store_data(page_ads, folder, curr_time)
-
-        time.sleep(random.uniform(2.5, 5.5))

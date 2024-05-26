@@ -40,17 +40,15 @@ def create_scrape_timeseries(scrape_files):
         files_for_date = []
 
         for filename in scrape_files:
-            
+
             date_and_time = re.search(r'(\d{4}_\d{2}_\d{2})', filename)
             file_date = datetime.strptime(date_and_time[0], '%Y_%m_%d')
-            
+
             if file_date == date:
                 files_for_date.append(filename)
 
         scrape_timeseries[date.strftime('%Y-%m-%d')] = files_for_date    
-        
-    #dates = [re.search(r'(\d{4}_\d{2}_\d{2}_\d{2}_\d{2})', f) for f in scrape_files]
-    #dates = [datetime.strptime(d[0], '%Y_%m_%d_%H_%M') for d in dates]
+
     scrape_timeseries = dict(sorted(scrape_timeseries.items()))
 
     for k, v in scrape_timeseries.items():
@@ -103,7 +101,7 @@ def calculate_size(scrape_files):
 
 def missing_xpath_keys(scrape_files):
     files = [f for f in scrape_files if 'other' in f]
-    
+
     all_key_counts = {}
 
     for f in files:
@@ -152,7 +150,7 @@ def count_missing(scrape_files):
 
         if 1 not in counts.values:
             continue
-        
+
         counts = dict(counts)
         counts = [k for k, v in counts.items() if v==1]
 
@@ -160,7 +158,7 @@ def count_missing(scrape_files):
 
     if not missing:
         return
-    
+
     print("--- 100% MISSING VALUES DETECTED ---")
     print(missing)
 

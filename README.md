@@ -1,10 +1,14 @@
 # About
-
+Scraping finn with Python and requests.
 
 # Setup
 `mkdir finn`\
 `mkdir logs`\
 `pip install -r requirements.txt`\
+
+
+### To run
+`python src/finn_scraper.py`
 
 
 ## Checklist
