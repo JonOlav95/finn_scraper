@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 
 from scrape_helpers import previously_scraped
-from scrape_functions import scrape_pages
+from scrape_functions import iterate_pages
 from misc_helpers import load_random_headers, init_logging
 
 
@@ -28,7 +28,7 @@ def main():
     scraped_urls = previously_scraped(dirpath='nav', column='url', n_files=30)
     page_iterator = lambda p : f'{base_url}/stillinger?from={p + 25}{daily_toggle}'
     
-    scrape_pages(curr_time, folder, headers, page_iterator, scraped_urls,
+    iterate_pages(curr_time, folder, headers, page_iterator, scraped_urls,
                     page_pattern, ad_pattern, key_pattern, id_pattern,
                     base_url=base_url)
     

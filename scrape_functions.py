@@ -68,7 +68,7 @@ def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
     return result_dict
 
 
-def scrape_pages(curr_time,
+def iterate_pages(curr_time,
                  folder,
                  headers,
                  page_iterator,
@@ -140,7 +140,7 @@ def scrape_pages(curr_time,
 
         # TODO OPTIMIZE
         page_urls = [u for u in all_urls if page_pattern.search(u)]
-        if f'page={page_number + 1}' not in '\t'.join(page_urls):
+        if page_iterator(page_number + 1) not in '\t'.join(page_urls):
             return
         
         time.sleep(random.uniform(2.5, 5.5))

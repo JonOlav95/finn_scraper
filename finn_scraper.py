@@ -1,16 +1,20 @@
 import requests
 import logging
 import re
+import yaml
 
 from bs4 import BeautifulSoup
 from datetime import datetime
 
 from misc_helpers import get_sub_urls, init_logging, load_random_headers
 from scrape_helpers import previously_scraped
-from scrape_functions import scrape_pages
+from scrape_functions import iterate_pages
 
 
 def main():
+    with open('parameters.yml', 'r') as file:
+        flags = yaml.safe_load(file)
+
     folder = 'finn'
     curr_time = datetime.today().strftime('%Y_%m_%d')
     headers = load_random_headers()
@@ -33,7 +37,7 @@ def main():
                                            column='finn_code', 
                                            n_files=50)
 
-        if False:
+        if flags['daily_scrape']:
             toggles = ['&published=1']
         else:
             url = f'{base_url}/{sub_url}/search.html'
@@ -47,7 +51,7 @@ def main():
         for t in toggles:
             page_iterator = lambda p : f'{base_url}/{sub_url}/search.html?page={p + 1}&{t}'
                 
-            scrape_pages(curr_time, folder, headers, page_iterator, scraped_codes,
+            iterate_pages(curr_time, folder, headers, page_iterator, scraped_codes,
                             page_pattern, ad_pattern, key_pattern, id_pattern)
         
         logging.info(f'FINISHED SCRAPING {sub_url}.')
