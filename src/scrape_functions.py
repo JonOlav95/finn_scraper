@@ -111,9 +111,10 @@ def iterate_pages(curr_time,
     for page_number in range(100):
         logging.info(f'SCRAPING PAGE {page_number + 1}')
 
-        time.sleep(random.uniform(2.5, 5.5))
+        time.sleep(random.uniform(2.5, 3.5))
 
         url = page_iterator(page_number)
+        print(url)
         r = requests.get(url, headers=headers)
 
         if r.status_code == 400:

@@ -35,7 +35,7 @@ def main():
                                            n_files=50)
 
         if flags['daily_scrape']:
-            toggles = ['&published=1']
+            toggles = ['published=1']
         else:
             url = f'{base_url}/{sub_url}/search.html'
             r = requests.get(url, headers=headers)
@@ -44,9 +44,10 @@ def main():
             divs = soup.find_all("div", {"class": "input-toggle"})
             toggle_inputs = [div.find("input", {"type": "checkbox"}) for div in divs]
             toggles = [u.get("id") for u in toggle_inputs]
+            toggles = [t.replace("-", "=") for t in toggles]
 
         for t in toggles:
-            page_iterator = lambda p: f'{base_url}{sub_url}/search.html?{t}&page={p + 1}'
+            page_iterator = lambda p: f'{base_url}{sub_url}/search.html?page={p + 1}&{t}'
 
             iterate_pages(curr_time=curr_time,
                           folder=folder,
