@@ -5,6 +5,10 @@ from datetime import datetime
 
 
 def extract_datetime(filename):
+    """
+    Extract datetime as string from a given filename.
+    Is used across multiple files.
+    """
     date_and_time = re.search(r'(\d{4}_\d{2}_\d{2})', filename)
 
     if not date_and_time:
@@ -17,6 +21,18 @@ def extract_datetime(filename):
 
 
 def previously_scraped(dirpath, identifier, n_files):
+    """
+    Checks previously scraped files to avoid scraping the same
+    ad multiple times. The number of files to check can be customized.
+    The files are then sorted by datetime.
+
+    Args:
+        dirpath: Directory for previously scraped csvs.
+        identifier: Which column to exctract.
+        n_files: How many files to account for.
+    Returns:
+        A list of with identifiers. For finn the id is finn_code.
+    """
 
     metadata = []
 

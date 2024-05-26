@@ -1,6 +1,11 @@
 # About
 Scraping finn with Python and requests.
 
+CSV example
+![alt text](media/scrape_example.png)
+
+Log example
+![alt text](media/log_example.png)
 # Setup
 `mkdir finn`\
 `mkdir logs`\
@@ -13,5 +18,5 @@ Scraping finn with Python and requests.
 
 ## Checklist
 - [ ] Add detail to headers.
-- [ ] Add sleep timer and folder etc to parameters.yml
-- [ ] Complex queries instead of binary daily/not daily scrape
+- [ ] Add sleep timer and folder etc to parameters.yml.
+- [ ] Custom queries instead of binary daily/not daily scrape.

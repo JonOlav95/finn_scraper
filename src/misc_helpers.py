@@ -1,7 +1,5 @@
 import logging
-import os
 import sys
-import yaml
 
 from random import choice
 
@@ -43,12 +41,3 @@ def init_logging(filename):
 
     logger.addHandler(file_handler)
     logger.addHandler(stdout_handler)
-
-
-def load_flags():
-    location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-    f = open(os.path.join(location, "parameters.yml"), "r")
-    flags = yaml.safe_load(f)
-    f.close()
-
-    return flags

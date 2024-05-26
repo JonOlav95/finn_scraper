@@ -1,7 +1,7 @@
 
 
 def work_xpaths(key):
-    
+
     default_work = {
         'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]//h1",
         'content': "//div[@class='import-decoration']//section",
@@ -15,9 +15,9 @@ def work_xpaths(key):
             'content': "//div[@data-testid='aggregated-ad-object']//div[1]//section[1]",
             'definition_1': "//div[@data-testid='aggregated-ad-object']//div[1]//dl[1]", # html
             'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]" # html
-        
+
         },
-        
+  
         'fulltime': default_work,
         'management': default_work,
         'parttime': default_work,
@@ -42,7 +42,7 @@ def housing_xpaths(key):
     pricing_details = {'pricing_details': '//section[@data-testid="pricing-details"]//dl'}
     pricing_indicative = {'pricing_indicative': '//div[contains(@data-testid, "pricing-indicative-price") \
                           or contains(@data-testid, "pricing-incicative-price")]//span[2]'}
-    
+
     # Uncommon xpaths
     sub_title = {'sub_title': '//section[@data-testid="object-title"]//h1'}
 
@@ -55,14 +55,14 @@ def housing_xpaths(key):
         **cadastreinfo_part,
         **key_info,
         **pricing_details,
-        **facilities 
+        **facilities
     }
 
     xpaths = {
         'lettings': {
             **title,
             **key_info,
-            **address,  
+            **address,
             **facilities,
             **about,
             **pricing_details
