@@ -1,5 +1,5 @@
 # About
-Scraping finn with Python and requests.
+Scraping Finn with Python and requests. **Work in progress**.
 
 CSV example
 ![alt text](media/scrape_example.png)
