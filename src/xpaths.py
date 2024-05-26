@@ -6,18 +6,18 @@ def work_xpaths(key):
         'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]//h1",
         'content': "//div[@class='import-decoration']//section",
         'keywords': "//*[contains(text(),'Nøkkelord')]/following-sibling::*",
-        'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]//dl", # html
-        'definition_2': "//dl[@class='definition-list definition-list--inline']", # html
+        'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]//dl",
+        'definition_2': "//dl[@class='definition-list definition-list--inline']",
     }
     xpaths = {
         'positions': {
             'title': "//div[@data-testid='aggregated-ad-object']//div[1]//h1[1]",
             'content': "//div[@data-testid='aggregated-ad-object']//div[1]//section[1]",
-            'definition_1': "//div[@data-testid='aggregated-ad-object']//div[1]//dl[1]", # html
-            'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]" # html
+            'definition_1': "//div[@data-testid='aggregated-ad-object']//div[1]//dl[1]",
+            'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]"
 
         },
-  
+
         'fulltime': default_work,
         'management': default_work,
         'parttime': default_work,
@@ -83,7 +83,7 @@ def housing_xpaths(key):
             **about,
             **facilities,
             **sub_title,
-            'pricing_indicative': '//div[@data-testid="pricing-incicative-price"]//span[1]//span[2]', # Different structure
+            'pricing_indicative': '//div[@data-testid="pricing-incicative-price"]//span[1]//span[2]',  # Different structure
         },
 
         'projectsingle': {
@@ -136,7 +136,7 @@ def housing_xpaths(key):
         'businessplots': default_housing,
         'companyforsale': default_housing
     }
-    
+
     if key not in xpaths.keys():
         return None
 
@@ -146,7 +146,5 @@ def housing_xpaths(key):
 def load_xpath(key):
     if key in ['fulltime', 'positions', 'management', 'parttime']:
         return work_xpaths(key)
-    
+
     return housing_xpaths(key)
-
-

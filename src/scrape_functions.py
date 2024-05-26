@@ -141,6 +141,7 @@ def iterate_pages(curr_time,
 
             # Check if ad has been scraped before.
             if idx in scraped_codes:
+                logging.info(f'ALREADY SCRAPED: {url}')
                 continue
 
             scraped_codes.append(idx)

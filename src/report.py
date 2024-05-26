@@ -164,7 +164,11 @@ def count_missing(scrape_files):
 
 
 def main():
-    scrape_files = ['finn/' + s for s in os.listdir('finn')]
+
+    finn_files = ['finn/' + s for s in os.listdir('finn')]
+    nav_files = ['nav/' + s for s in os.listdir('nav')]
+
+    scrape_files = finn_files + nav_files
 
     if not scrape_files:
         print("No scrape files.")
