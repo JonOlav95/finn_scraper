@@ -9,7 +9,7 @@ Log example
 # Setup
 `mkdir finn`\
 `mkdir logs`\
-`pip install -r requirements.txt`\
+`pip install -r requirements.txt`
 
 
 ### To run
