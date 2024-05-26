@@ -156,7 +156,7 @@ def iterate_pages(curr_time,
             result = scrape_single_page(url=url,
                                         headers=headers,
                                         scrape_key=xpath_key,
-                                        xpaths=xpaths, 
+                                        xpaths=xpaths,
                                         idx=idx)
 
             # Store the ad temporarliy in a dictionary. A finn page

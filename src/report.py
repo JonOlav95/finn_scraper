@@ -144,7 +144,7 @@ def count_missing(scrape_files):
 
         if length < 20:
             continue
-        
+
         counts = df.isna().sum()
         counts /= len(df.index)
 
@@ -164,10 +164,7 @@ def count_missing(scrape_files):
 
 
 def main():
-    finn_files = ['finn/' + s for s in os.listdir('finn')]
-    nav_files = ['nav/' + s for s in os.listdir('nav')]
-
-    scrape_files = finn_files + nav_files
+    scrape_files = ['finn/' + s for s in os.listdir('finn')]
 
     if not scrape_files:
         print("No scrape files.")

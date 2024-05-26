@@ -6,6 +6,9 @@ CSV example
 
 Log example
 ![alt text](media/log_example.png)
+
+Report
+![alt text](media/report.png)
 # Setup
 `mkdir finn`\
 `mkdir logs`\
