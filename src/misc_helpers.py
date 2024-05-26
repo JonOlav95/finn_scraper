@@ -21,7 +21,8 @@ def load_random_headers():
     headers = {
         "User-Agent": choice(user_agents),
         "Accept-Language": "en-GB,en,q=0.5",
-        "Referer": "https://google.com"
+        "Referer": "https://google.com",
+        "DNT": "1"
     }
 
     return headers

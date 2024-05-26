@@ -44,7 +44,12 @@ def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
         headers: Request headers.
         **kwargs: Used for custom storing to the csv.
     """
-    r = requests.get(url, headers=headers)
+
+    try:
+        r = requests.get(url, headers=headers)
+    except requests.exceptions.ConnectionError as e:
+        logging.error(f'ConnectionError for {e}')
+        return
 
     if r.status_code != 200:
         logging.critical(f"SCRAPE PAGE RESPONSE CODE {r.status_code}, URL: {url}")
@@ -162,6 +167,9 @@ def iterate_pages(curr_time,
                                         scrape_key=xpath_key,
                                         xpaths=xpaths,
                                         idx=idx)
+
+            if not result:
+                continue
 
             # Store the ad temporarliy in a dictionary. A finn page
             # may contain ads of different type. E.g. 'home' ads may contain
