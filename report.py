@@ -3,8 +3,8 @@ import os
 import pandas as pd
 
 from datetime import datetime, timedelta
-from scrape_helpers import extract_datetime
 from collections import Counter
+from scrape_helpers import extract_datetime
 
 
 def inspect_log_files(n_logs=10):

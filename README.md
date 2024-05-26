@@ -17,3 +17,8 @@
 ### Xpaths
 - [x] Verify default housing and default work is appropriate for all given urls.
 - [x] Xpath for newbuildings.
+
+
+
+- [ ] Add detail to headers.
+- [ ] Add sleep timer and folder etc to parameters.yml

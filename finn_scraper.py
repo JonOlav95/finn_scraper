@@ -45,7 +45,7 @@ def main():
             toggles = [u.get("id") for u in toggle_inputs]
 
         for t in toggles:
-            page_iterator = lambda p : f'{base_url}/{sub_url}/search.html?page=&{p + 1}{t}'
+            page_iterator = lambda p : f'{base_url}/{sub_url}/search.html?page={p + 1}&{t}'
                 
             scrape_pages(curr_time, folder, headers, page_iterator, scraped_codes,
                             page_pattern, ad_pattern, key_pattern, id_pattern)
