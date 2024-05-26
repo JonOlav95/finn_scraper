@@ -108,13 +108,15 @@ def iterate_pages(curr_time,
         xpath_key_pattern: Regex pattern for finding correct xpaths.
         id_pattern: Regex pattern for finding id in url.
     """
+
+    headers['Referer'] = 'https://www.google.com'
+
     for page_number in range(100):
         logging.info(f'SCRAPING PAGE {page_number + 1}')
 
         time.sleep(random.uniform(2.5, 3.5))
 
         url = page_iterator(page_number)
-        print(url)
         r = requests.get(url, headers=headers)
 
         if r.status_code == 400:

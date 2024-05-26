@@ -1,5 +1,5 @@
 # About
-Scraping Finn with Python and requests. **Work in progress**.
+Scraping Finn housing/work ads with Python and requests. **Work in progress**.
 
 Scraping different subdomains within finn *(see parameters.yml)*. E.g. housing ads, project ads,
 work ads. Each different subdomain requires a different set of xpaths, though there are many common denominators *(see src/xpaths.py)*.
