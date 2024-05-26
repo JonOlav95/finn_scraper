@@ -1,5 +1,4 @@
 import os
-import re
 import time
 import random
 import logging
@@ -13,6 +12,14 @@ from xpaths import load_xpath
 
 
 def store_data(page_ads, folder, curr_time):
+    """
+    Stores all data to a csv.
+
+    Args:
+        page_ads: Dict where key is type of ad, and value is scrape dict.
+        folder: Where to store the data.
+        curr_time: Time string for filename.
+    """
     for xpath_key in page_ads.keys():
 
         filename = f'{folder}/{xpath_key}_{curr_time}.csv'
@@ -26,6 +33,17 @@ def store_data(page_ads, folder, curr_time):
 
 
 def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
+    """
+    Scrape a single ad. Different ad types require different
+    xpaths.
+
+    Args:
+        url: Url where the ad is.
+        xpaths: xpaths for the given type of ad.
+        scrape_key: Identifier of the ad.
+        headers: Request headers.
+        **kwargs: Used for custom storing to the csv.
+    """
     r = requests.get(url, headers=headers)
 
     if r.status_code != 200:
@@ -57,7 +75,6 @@ def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
         else:
             result_dict[k] = etree.tostring(content[0], method='html', encoding='unicode')
 
-
     if 'title' in result_dict:
         title = etree.tostring(etree.fromstring(result_dict['title']), method="text", encoding="unicode")
         logging.info(f'{scrape_key} TITLE: {title.rstrip()}')
@@ -75,7 +92,21 @@ def iterate_pages(curr_time,
                   ad_pattern,
                   xpath_key_pattern,
                   id_pattern):
+    """
+    Iterate pages goes through all pages and extract ads
+    to scrape. If no ads are found on the page, the function
+    returns. The function stores all data in batches at the
+    end of the page scrape.
 
+    Args:
+        curr_time: Start time of scrape, used for filename.
+        folder: Where to store the data.
+        headers: Request headers.
+        page_iterator: Lambda used to extract next page.
+        ad_pattern: Regex pattern for finding ads in urls.
+        xpath_key_pattern: Regex pattern for finding correct xpaths.
+        id_pattern: Regex pattern for finding id in url.
+    """
     for page_number in range(100):
         logging.info(f'SCRAPING PAGE {page_number + 1}')
 
@@ -86,7 +117,7 @@ def iterate_pages(curr_time,
 
         if r.status_code == 400:
             return
-        if r.status_code != 200:
+        elif r.status_code != 200:
             logging.critical(f"ITERATE PAGE RESPONSE CODE {r.status_code}, URL: {url}")
             continue
 

@@ -3,7 +3,6 @@
 
 # Setup
 `mkdir finn`\
-`mkdir nav`\
 `mkdir logs`\
 `pip install -r requirements.txt`\
 
