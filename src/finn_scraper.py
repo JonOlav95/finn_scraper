@@ -47,7 +47,7 @@ def main():
             toggles = [t.replace("-", "=") for t in toggles]
 
         for t in toggles:
-            page_iterator = lambda p: f'{base_url}{sub_url}/search.html?page={p + 1}&{t}'
+            page_iterator = lambda p: f'{base_url}{sub_url}/search.html?{t}&page={p + 1}'
 
             iterate_pages(curr_time=curr_time,
                           folder=folder,

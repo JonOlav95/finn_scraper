@@ -174,3 +174,8 @@ def iterate_pages(curr_time,
             time.sleep(random.uniform(0.75, 1.5))
 
         store_data(page_ads, folder, curr_time)
+
+        next_page = page_iterator(page_number + 1)
+
+        if not any(url in next_page for url in all_urls if 'page=' in url):
+            return
