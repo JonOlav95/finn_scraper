@@ -2,19 +2,19 @@
 # Finn
 daily_scrape: False
 finn_sub_urls:
-  - realestate/homes,
-  - realestate/newbuildings,
-  - realestate/plots,
-  - realestate/leisureplots,
-  - realestate/lettings,
-  - realestate/wanted,
-  - realestate/abroad,
-  - realestate/leisuresale,
-  - realestate/businesssale,
-  - realestate/businessrent,
-  - realestate/businessplots,
-  - realestate/companyforsale,
-  - job/fulltime,
-  - job/parttime,
+  - realestate/homes
+  - realestate/newbuildings
+  - realestate/plots
+  - realestate/leisureplots
+  - realestate/lettings
+  - realestate/wanted
+  - realestate/abroad
+  - realestate/leisuresale
+  - realestate/businesssale
+  - realestate/businessrent
+  - realestate/businessplots
+  - realestate/companyforsale
+  - job/fulltime
+  - job/parttime
   - job/management
   
