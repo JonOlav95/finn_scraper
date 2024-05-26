@@ -12,6 +12,7 @@ from scrape_functions import iterate_pages
 
 
 def get_sub_urls():
+    # List of sub urls to scrape. Might be moved to parameters
     return [
         'realestate/homes',
         'realestate/newbuildings',
