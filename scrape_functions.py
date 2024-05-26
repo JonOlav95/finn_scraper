@@ -9,13 +9,12 @@ import pandas as pd
 from lxml import etree
 from datetime import datetime
 from bs4 import BeautifulSoup
-from misc_helpers import load_xpath
-
+from xpaths import load_xpath
 
 
 def store_data(page_ads, folder, curr_time):
     for xpath_key in page_ads.keys():
-        
+
         filename = f'{folder}/{xpath_key}_{curr_time}.csv'
         value_df = pd.DataFrame(page_ads[xpath_key])
 
@@ -69,28 +68,28 @@ def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
 
 
 def iterate_pages(curr_time,
-                 folder,
-                 headers,
-                 page_iterator,
-                 previously_scraped,
-                 page_pattern,
-                 ad_pattern,
-                 xpath_key_pattern,
-                 id_pattern,
-                 base_url=None):
-    
+                  folder,
+                  headers,
+                  page_iterator,
+                  previously_scraped,
+                  page_pattern,
+                  ad_pattern,
+                  xpath_key_pattern,
+                  id_pattern,
+                  base_url=None):
 
     for page_number in range(100):
         logging.info(f'SCRAPING PAGE {page_number}')
 
         time.sleep(random.uniform(0.75, 1.5))
+        
         url = page_iterator(page_number)
         r = requests.get(url, headers=headers)
 
         if r.status_code != 200:
             logging.critical(f"ITERATE PAGE RESPONSE CODE {r.status_code}, URL: {url}")
             continue
-            
+
         headers['Referer'] = url
         soup = BeautifulSoup(r.text, "html.parser")
 
@@ -114,21 +113,18 @@ def iterate_pages(curr_time,
 
             if idx in previously_scraped:
                 continue
-            
+
             previously_scraped.append(idx)
 
-            #TODO group 2 for finn
             xpath_key = xpath_key_pattern.findall(url)[0]
             xpaths = load_xpath(xpath_key)
-            
+
             if not xpaths:
                 xpath_key = 'other'
 
             result = scrape_single_page(url=url, headers=headers, scrape_key=xpath_key,
-                                 xpaths=xpaths, idx=idx)
+                                        xpaths=xpaths, idx=idx)
 
-            #page_ads.setdefault(xpath_key, []).append(result)
- 
             if xpath_key in page_ads.keys():
                 page_ads[xpath_key].append(result)
             else:
@@ -138,10 +134,9 @@ def iterate_pages(curr_time,
 
         store_data(page_ads, folder, curr_time)
 
-        # TODO OPTIMIZE
-        page_urls = [u for u in all_urls if page_pattern.search(u)]
+        page_urls = [base_url + u for u in all_urls if page_pattern.search(u)]
         if page_iterator(page_number + 1) not in '\t'.join(page_urls):
             return
-        
+
         time.sleep(random.uniform(2.5, 5.5))
 

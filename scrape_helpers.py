@@ -4,20 +4,19 @@ import pandas as pd
 from datetime import datetime
 
 
-
 def extract_datetime(filename):
     date_and_time = re.search(r'(\d{4}_\d{2}_\d{2})', filename)
 
     if not date_and_time:
         return None
-    
+
     parsed_datetime = datetime.strptime(date_and_time[0], '%Y_%m_%d')
     parsed_datetime = parsed_datetime.strftime('%Y_%m_%d')
 
     return parsed_datetime
 
 
-def previously_scraped(dirpath, column, n_files):
+def previously_scraped(dirpath, identifier, n_files):
 
     metadata = []
 
@@ -52,6 +51,6 @@ def previously_scraped(dirpath, column, n_files):
         (pd.read_csv(f'{dirpath}/{f}', encoding='utf-8') for f in files if os.path.isfile(f'{dirpath}/{f}')),
         ignore_index=True)
 
-    scraped_codes = previous_scrapes[column].to_list()
+    scraped_codes = previous_scrapes[identifier].astype(str).to_list()
 
     return scraped_codes

@@ -6,7 +6,23 @@ from datetime import datetime
 
 from scrape_helpers import previously_scraped
 from scrape_functions import iterate_pages
-from misc_helpers import load_random_headers, init_logging
+from xpaths import load_random_headers, init_logging
+
+
+def nav_xpaths():
+    xpaths = {
+        'title': '//*[@id="main-content"]/article/div/h1',
+        'company': '//*[@id="main-content"]/article/div/section[1]/div[1]/p',
+        'location': '//*[@id="main-content"]/article/div/section[1]/div[2]/p',
+        'job_content': '//div[contains(@class, "job-posting-text")]',
+        'employer': '//h2[contains(text(), "Om bedriften")]/../div',
+        'deadline': '//h2[contains(text(), "Søk på jobben")]/../p',
+        'about': '//h2[contains(text(), "Om jobben")]/../../dl',
+        'contact_person': '//h2[contains(text(), "Kontaktperson for stillingen") or contains(text(), "Kontaktpersoner for stillingen")]/..',
+        'ad_data': '//h2[contains(text(), "Annonsedata")]/../dl'
+    }
+
+    return xpaths
 
 
 def main():
@@ -25,7 +41,7 @@ def main():
 
     logging.info(f'SCRAPING NAV')
 
-    scraped_urls = previously_scraped(dirpath='nav', column='url', n_files=30)
+    scraped_urls = previously_scraped(dirpath='nav', identifier='url', n_files=30)
     page_iterator = lambda p : f'{base_url}/stillinger?from={p + 25}{daily_toggle}'
     
     iterate_pages(curr_time, folder, headers, page_iterator, scraped_urls,

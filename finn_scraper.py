@@ -6,9 +6,30 @@ import yaml
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from misc_helpers import get_sub_urls, init_logging, load_random_headers
+from misc_helpers import init_logging, load_random_headers
 from scrape_helpers import previously_scraped
 from scrape_functions import iterate_pages
+
+
+def get_sub_urls():
+    return [
+        'realestate/homes',
+        'realestate/newbuildings',
+        'realestate/plots',
+        'realestate/leisureplots',
+        'realestate/lettings',
+        'realestate/wanted',
+        'realestate/abroad',
+        'realestate/leisuresale',
+        'realestate/businesssale',
+        'realestate/businessrent',
+        'realestate/businessplots',
+        'realestate/companyforsale',
+
+        'job/fulltime',
+        'job/parttime',
+        'job/management',
+    ]
 
 
 def main():
@@ -18,7 +39,7 @@ def main():
     folder = 'finn'
     curr_time = datetime.today().strftime('%Y_%m_%d')
     headers = load_random_headers()
-    
+
     key_pattern = re.compile(r'finn\.no/\w+/(\w+)')
     page_pattern = re.compile(r'page=\d+')
     ad_pattern = re.compile(r'finnkode=\d+')
@@ -33,8 +54,8 @@ def main():
     for sub_url in sub_urls:
         logging.info(f'SCRAPING DOMAIN: {sub_url}')
 
-        scraped_codes = previously_scraped(dirpath='finn', 
-                                           column='finn_code', 
+        scraped_codes = previously_scraped(dirpath='finn',
+                                           identifier='idx',
                                            n_files=50)
 
         if flags['daily_scrape']:
@@ -49,11 +70,19 @@ def main():
             toggles = [u.get("id") for u in toggle_inputs]
 
         for t in toggles:
-            page_iterator = lambda p : f'{base_url}/{sub_url}/search.html?page={p + 1}&{t}'
-                
-            iterate_pages(curr_time, folder, headers, page_iterator, scraped_codes,
-                            page_pattern, ad_pattern, key_pattern, id_pattern)
-        
+            page_iterator = lambda p: f'{base_url}/{sub_url}/search.html?page={p + 1}&{t}'
+
+            iterate_pages(curr_time=curr_time,
+                          folder=folder,
+                          headers=headers,
+                          page_iterator=page_iterator,
+                          scraped_codes=scraped_codes,
+                          page_pattern=page_pattern,
+                          ad_pattern=ad_pattern,
+                          key_pattern=key_pattern,
+                          id_pattern=id_pattern,
+                          base_url=base_url)
+
         logging.info(f'FINISHED SCRAPING {sub_url}.')
 
 

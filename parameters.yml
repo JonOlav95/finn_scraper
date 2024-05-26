@@ -1,0 +1,5 @@
+
+# Finn
+daily_scrape: False
+ad_sleep: 2
+page_sleep: 2
