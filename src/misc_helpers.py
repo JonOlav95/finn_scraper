@@ -5,6 +5,7 @@ from random import choice
 
 
 def load_random_headers():
+    """Set up headers with a random user agent."""
     user_agents = [
         'user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2859.0 Safari/537.36',
         'user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
@@ -27,6 +28,7 @@ def load_random_headers():
 
 
 def init_logging(filename):
+    """Initiate a logging file in folder logs"""
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')

@@ -11,28 +11,6 @@ from scrape_helpers import previously_scraped
 from scrape_functions import iterate_pages
 
 
-def get_sub_urls():
-    # List of sub urls to scrape. Might be moved to parameters
-    return [
-        'realestate/homes',
-        'realestate/newbuildings',
-        'realestate/plots',
-        'realestate/leisureplots',
-        'realestate/lettings',
-        'realestate/wanted',
-        'realestate/abroad',
-        'realestate/leisuresale',
-        'realestate/businesssale',
-        'realestate/businessrent',
-        'realestate/businessplots',
-        'realestate/companyforsale',
-
-        'job/fulltime',
-        'job/parttime',
-        'job/management',
-    ]
-
-
 def main():
     with open('parameters.yml', 'r') as file:
         flags = yaml.safe_load(file)
@@ -47,11 +25,9 @@ def main():
 
     base_url = 'https://www.finn.no/'
 
-    sub_urls = get_sub_urls()
-
     init_logging(f'logs/finn_{curr_time}.log')
 
-    for sub_url in sub_urls:
+    for sub_url in flags['finn_sub_urls']:
         logging.info(f'SCRAPING DOMAIN: {sub_url}')
 
         scraped_codes = previously_scraped(dirpath='finn',
