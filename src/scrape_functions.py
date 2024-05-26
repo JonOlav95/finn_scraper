@@ -52,7 +52,7 @@ def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
         return
 
     if r.status_code != 200:
-        logging.critical(f"SCRAPE PAGE RESPONSE CODE {r.status_code}, URL: {url}")
+        logging.error(f"SCRAPE PAGE RESPONSE CODE {r.status_code}, URL: {url}")
         return
 
     tree = etree.HTML(r.text)
@@ -127,7 +127,7 @@ def iterate_pages(curr_time,
         if r.status_code == 400:
             return
         elif r.status_code != 200:
-            logging.critical(f"ITERATE PAGE RESPONSE CODE {r.status_code}, URL: {url}")
+            logging.error(f"ITERATE PAGE RESPONSE CODE {r.status_code}, URL: {url}")
             continue
 
         headers['Referer'] = url
