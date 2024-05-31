@@ -28,11 +28,6 @@ def main():
     init_logging(f'logs/finn_{curr_time}.log')
 
     for sub_url in flags['finn_sub_urls']:
-        logging.info(f'SCRAPING DOMAIN: {sub_url}')
-
-        scraped_codes = previously_scraped(dirpath='finn',
-                                           identifier='idx',
-                                           n_files=50)
 
         if flags['daily_scrape']:
             toggles = ['published=1']
@@ -47,7 +42,12 @@ def main():
             toggles = [t.replace("-", "=") for t in toggles]
 
         for t in toggles:
+            logging.info(f'SCRAPING {sub_url} WITH {t}')
             page_iterator = lambda p: f'{base_url}{sub_url}/search.html?{t}&page={p + 1}'
+
+            scraped_codes = previously_scraped(dirpath='finn',
+                                               identifier='idx',
+                                               n_files=50)
 
             iterate_pages(curr_time=curr_time,
                           folder=folder,
