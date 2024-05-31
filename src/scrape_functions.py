@@ -65,11 +65,11 @@ def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
 
     # If no xpath is found, scrape the entire HTML.
     if not xpaths:
-        logging.info("NO XPATHS")
+        logging.info('NO XPATHS')
         logging.info(f'{scrape_key} URL: {url}')
 
         entire_html = etree.tostring(tree, encoding='unicode')
-        result_dict["html"] = entire_html
+        result_dict['html'] = entire_html
 
         return result_dict
 
