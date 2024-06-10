@@ -47,7 +47,7 @@ def main():
 
             scraped_codes = previously_scraped(dirpath='finn',
                                                identifier='idx',
-                                               n_files=50)
+                                               n_files=100)
 
             iterate_pages(curr_time=curr_time,
                           folder=folder,

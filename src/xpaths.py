@@ -8,14 +8,16 @@ def work_xpaths(key):
         'keywords': "//*[contains(text(),'Nøkkelord')]/following-sibling::*",
         'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]//dl",
         'definition_2': "//dl[@class='definition-list definition-list--inline']",
+        'last_edited': '//*[text()="Sist endret"]/following-sibling::*[1]'
+
     }
     xpaths = {
         'positions': {
             'title': "//div[@data-testid='aggregated-ad-object']//div[1]//h1[1]",
             'content': "//div[@data-testid='aggregated-ad-object']//div[1]//section[1]",
             'definition_1': "//div[@data-testid='aggregated-ad-object']//div[1]//dl[1]",
-            'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]"
-
+            'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]",
+            'last_edited': '//*[text()="Sist endret"]/following-sibling::*[1]'
         },
 
         'fulltime': default_work,
@@ -42,6 +44,7 @@ def housing_xpaths(key):
     pricing_details = {'pricing_details': '//section[@data-testid="pricing-details"]//dl'}
     pricing_indicative = {'pricing_indicative': '//div[contains(@data-testid, "pricing-indicative-price") \
                           or contains(@data-testid, "pricing-incicative-price")]//span[2]'}
+    last_edited = {'last_edited': '//tr[th[text()="Sist endret"]]/td'}
 
     # Uncommon xpaths
     sub_title = {'sub_title': '//section[@data-testid="object-title"]//h1'}
@@ -127,12 +130,31 @@ def housing_xpaths(key):
             **pricing_details,
         },
 
+        'plots': {
+            **title,
+            **pricing_indicative,
+            **about,
+            **address,
+            **cadastreinfo_part,
+            **key_info,
+            **pricing_details,
+            **facilities
+        },
+
+        'businessrent': {
+            **title,
+            **pricing_indicative,
+            **about,
+            **address,
+            **cadastreinfo_part,
+            **key_info,
+            **pricing_details
+        },
+
 
         "homes": default_housing,
         'leisuresale': default_housing,
-        'plots': default_housing,
         'businesssale': default_housing,
-        'businessrent': default_housing,
         'businessplots': default_housing,
         'companyforsale': default_housing
     }
