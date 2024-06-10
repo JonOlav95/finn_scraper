@@ -1,6 +1,6 @@
 
 # Finn
-daily_scrape: False
+daily_scrape: True
 finn_sub_urls:
   - job/fulltime
   - job/parttime
