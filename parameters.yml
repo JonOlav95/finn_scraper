@@ -1,6 +1,6 @@
 
 # Finn
-daily_scrape: True
+daily_scrape: False
 finn_sub_urls:
   - realestate/homes
   - job/fulltime
