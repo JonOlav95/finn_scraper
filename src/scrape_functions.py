@@ -82,8 +82,9 @@ def scrape_single_page(url, xpaths, scrape_key, headers, **kwargs):
             result_dict[k] = etree.tostring(content[0], method='html', encoding='unicode')
 
     if 'title' in result_dict:
-        title = etree.tostring(etree.fromstring(result_dict['title']), method="text", encoding="unicode")
-        logging.info(f'{scrape_key} TITLE: {title.rstrip()}')
+        if result_dict['title']:
+            title = etree.tostring(etree.fromstring(result_dict['title']), method="text", encoding="unicode")
+            logging.info(f'{scrape_key} TITLE: {title.rstrip()}')
     else:
         logging.info(f'{scrape_key} URL: {url}')
 

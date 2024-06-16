@@ -3,20 +3,20 @@
 def work_xpaths(key):
 
     default_work = {
-        'title': "//div[@data-controller='storeVisitedAd trackAd']//section[1]//h1",
-        'content': "//div[@class='import-decoration']//section",
+        'title': "//h1[1]",
+        'content': "//div[@class='import-decoration']",
         'keywords': "//*[contains(text(),'Nøkkelord')]/following-sibling::*",
-        'definition_1': "//div[@data-controller='storeVisitedAd trackAd']//section[2]//dl",
-        'definition_2': "//dl[@class='definition-list definition-list--inline']",
+        'definition_1': "//ul[1]",
+        'definition_2': "//ul[li/span[contains(text(), 'Sektor') or contains(text(), 'Sted')]]",
         'last_edited': '//*[text()="Sist endret"]/following-sibling::*[1]'
 
     }
     xpaths = {
         'positions': {
-            'title': "//div[@data-testid='aggregated-ad-object']//div[1]//h1[1]",
-            'content': "//div[@data-testid='aggregated-ad-object']//div[1]//section[1]",
-            'definition_1': "//div[@data-testid='aggregated-ad-object']//div[1]//dl[1]",
-            'definition_2': "//div[@data-testid='aggregated-ad-object']//div[2]//dl[1]",
+            'title': "//h1[1]",
+            'content': "//div[@class='import-decoration']",
+            'definition_1': "//dl[1]",
+            'definition_2': "//dl[dt[contains(text(), 'Sektor') or contains(text(), 'Sted')]]",
             'last_edited': '//*[text()="Sist endret"]/following-sibling::*[1]'
         },
 
@@ -58,7 +58,8 @@ def housing_xpaths(key):
         **cadastreinfo_part,
         **key_info,
         **pricing_details,
-        **facilities
+        **facilities,
+        **last_edited
     }
 
     xpaths = {
@@ -68,7 +69,8 @@ def housing_xpaths(key):
             **address,
             **facilities,
             **about,
-            **pricing_details
+            **pricing_details,
+            **last_edited
         },
 
         'planned': {
@@ -76,7 +78,8 @@ def housing_xpaths(key):
             **key_info,
             **address,
             **about,
-            **sub_title
+            **sub_title,
+            **last_edited
         },
 
         'project': {
@@ -87,6 +90,7 @@ def housing_xpaths(key):
             **facilities,
             **sub_title,
             'pricing_indicative': '//div[@data-testid="pricing-incicative-price"]//span[1]//span[2]',  # Different structure
+            **last_edited
         },
 
         'projectsingle': {
@@ -98,7 +102,8 @@ def housing_xpaths(key):
             **sub_title,
             **pricing_details,
             **local_area_name,
-            **pricing_indicative
+            **pricing_indicative,
+            **last_edited
         },
 
         'projectleisure': {
@@ -111,6 +116,7 @@ def housing_xpaths(key):
             **pricing_details,
             **local_area_name,
             **pricing_indicative,
+            **last_edited
         },
 
         'wanted': {
@@ -118,6 +124,7 @@ def housing_xpaths(key):
             **key_info,
             **about,
             'max_rent': '//div[@data-testid="letting-wanted-price"]//dd',
+            **last_edited
         },
 
         'abroad': {
@@ -128,6 +135,7 @@ def housing_xpaths(key):
             **facilities,
             **pricing_indicative,
             **pricing_details,
+            **last_edited
         },
 
         'plots': {
@@ -138,7 +146,8 @@ def housing_xpaths(key):
             **cadastreinfo_part,
             **key_info,
             **pricing_details,
-            **facilities
+            **facilities,
+            **last_edited
         },
 
         'businessrent': {
@@ -148,7 +157,8 @@ def housing_xpaths(key):
             **address,
             **cadastreinfo_part,
             **key_info,
-            **pricing_details
+            **pricing_details,
+            **last_edited
         },
 
 

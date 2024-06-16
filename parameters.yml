@@ -2,10 +2,10 @@
 # Finn
 daily_scrape: True
 finn_sub_urls:
+  - realestate/homes
   - job/fulltime
   - job/parttime
   - job/management
-  - realestate/homes
   - realestate/newbuildings
   - realestate/plots
   - realestate/leisureplots

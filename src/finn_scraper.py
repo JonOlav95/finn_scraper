@@ -16,6 +16,7 @@ def main():
         flags = yaml.safe_load(file)
 
     folder = 'finn'
+
     curr_time = datetime.today().strftime('%Y_%m_%d')
     headers = load_random_headers()
 
