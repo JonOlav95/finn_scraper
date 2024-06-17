@@ -140,37 +140,46 @@ def main():
     base_url = 'https://arbeidsplassen.nav.no'
     init_logging(f'logs/nav_{curr_time}.log')
 
-    if flags['daily_scrape']:
-        toggles = ['&published=now%2Fd']
-    else:
-        url = f'{base_url}/stillinger'
-        r = requests.get(url, headers=headers)
+    try:
+        if flags['daily_scrape']:
+            toggles = ['&published=now%2Fd']
+        else:
+            url = f'{base_url}/stillinger'
+   
+            try:
+                r = requests.get(url, headers=headers)
+            except requests.exceptions.ConnectionError as e:
+                logging.error(f'ConnectionError for {e}')
+                return
 
-        soup = BeautifulSoup(r.text, "html.parser")
-        inputs = soup.find_all("input")
-        inputs = [input_tag for input_tag in inputs
-                  if 'checkbox' or 'radio' in input_tag.get('id', '')]
+            soup = BeautifulSoup(r.text, "html.parser")
+            inputs = soup.find_all("input")
+            inputs = [input_tag for input_tag in inputs
+                      if 'checkbox' or 'radio' in input_tag.get('id', '')]
 
-        toggles = [f'{input.get("name")}={input.get("value")}'
-                   for input in inputs]
+            toggles = [f'{input.get("name")}={input.get("value")}'
+                       for input in inputs]
 
-        if 'q=' in toggles:
-            toggles.remove('q=')
+            if 'q=' in toggles:
+                toggles.remove('q=')
 
-    for t in toggles:
+        for t in toggles:
 
-        logging.info(f'SCRAPING NAV WITH {t}')
-        scraped_urls = previously_scraped(dirpath='nav', identifier='idx', n_files=50)
-        iterate_pages_nav(curr_time=curr_time,
-                          folder=folder,
-                          headers=headers,
-                          ad_pattern=ad_pattern,
-                          id_pattern=id_pattern,
-                          scraped_codes=scraped_urls,
-                          base_url=base_url,
-                          toggle=t)
+            logging.info(f'SCRAPING NAV WITH {t}')
+            scraped_urls = previously_scraped(dirpath='nav', identifier='idx', n_files=50)
+            iterate_pages_nav(curr_time=curr_time,
+                              folder=folder,
+                              headers=headers,
+                              ad_pattern=ad_pattern,
+                              id_pattern=id_pattern,
+                              scraped_codes=scraped_urls,
+                              base_url=base_url,
+                              toggle=t)
 
-        logging.info(f'FINISHED SCRAPING NAV WITH {t}')
+            logging.info(f'FINISHED SCRAPING NAV WITH {t}')
+
+    except Exception as e:
+        logging.error(f'MAIN CRASHED WITH {e}')
 
 
 if __name__ == "__main__":

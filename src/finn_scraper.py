@@ -28,38 +28,46 @@ def main():
 
     init_logging(f'logs/finn_{curr_time}.log')
 
-    for sub_url in flags['finn_sub_urls']:
+    try:
+        for sub_url in flags['finn_sub_urls']:
 
-        if flags['daily_scrape']:
-            toggles = ['published=1']
-        else:
-            url = f'{base_url}/{sub_url}/search.html'
-            r = requests.get(url, headers=headers)
+            if flags['daily_scrape']:
+                toggles = ['published=1']
+            else:
+                url = f'{base_url}/{sub_url}/search.html'
+                r = requests.get(url, headers=headers)
 
-            soup = BeautifulSoup(r.text, "html.parser")
-            divs = soup.find_all("div", {"class": "input-toggle"})
-            toggle_inputs = [div.find("input", {"type": "checkbox"}) for div in divs]
-            toggles = [u.get("id") for u in toggle_inputs]
-            toggles = [t.replace("-", "=") for t in toggles]
+                if r.status_code != 200:
+                    logging.error(f"Not 200 status code {r.status_code}, URL: {url}")
+                    continue
 
-        for t in toggles:
-            logging.info(f'SCRAPING {sub_url} WITH {t}')
-            page_iterator = lambda p: f'{base_url}{sub_url}/search.html?{t}&page={p + 1}'
+                soup = BeautifulSoup(r.text, "html.parser")
+                divs = soup.find_all("div", {"class": "input-toggle"})
+                toggle_inputs = [div.find("input", {"type": "checkbox"}) for div in divs]
+                toggles = [u.get("id") for u in toggle_inputs]
+                toggles = [t.replace("-", "=") for t in toggles]
 
-            scraped_codes = previously_scraped(dirpath='finn',
-                                               identifier='idx',
-                                               n_files=100)
+            for t in toggles:
+                logging.info(f'SCRAPING {sub_url} WITH {t}')
+                page_iterator = lambda p: f'{base_url}{sub_url}/search.html?{t}&page={p + 1}'
 
-            iterate_pages(curr_time=curr_time,
-                          folder=folder,
-                          headers=headers,
-                          page_iterator=page_iterator,
-                          scraped_codes=scraped_codes,
-                          ad_pattern=ad_pattern,
-                          xpath_key_pattern=xpath_key_pattern,
-                          id_pattern=id_pattern)
+                scraped_codes = previously_scraped(dirpath='finn',
+                                                   identifier='idx',
+                                                   n_files=100)
 
-        logging.info(f'FINISHED SCRAPING {sub_url}.')
+                iterate_pages(curr_time=curr_time,
+                              folder=folder,
+                              headers=headers,
+                              page_iterator=page_iterator,
+                              scraped_codes=scraped_codes,
+                              ad_pattern=ad_pattern,
+                              xpath_key_pattern=xpath_key_pattern,
+                              id_pattern=id_pattern)
+
+            logging.info(f'FINISHED SCRAPING {sub_url}.')
+
+    except Exception as e:
+        logging.error(f'MAIN CRASHED WITH {e}')
 
 
 if __name__ == "__main__":
