@@ -64,6 +64,7 @@ def main():
                               xpath_key_pattern=xpath_key_pattern,
                               id_pattern=id_pattern)
 
+
             logging.info(f'FINISHED SCRAPING {sub_url}.')
 
     except Exception as e:

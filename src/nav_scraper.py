@@ -145,7 +145,7 @@ def main():
             toggles = ['&published=now%2Fd']
         else:
             url = f'{base_url}/stillinger'
-   
+
             try:
                 r = requests.get(url, headers=headers)
             except requests.exceptions.ConnectionError as e:

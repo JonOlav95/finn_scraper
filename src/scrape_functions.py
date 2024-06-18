@@ -120,7 +120,7 @@ def iterate_pages(curr_time,
     for page_number in range(100):
         logging.info(f'SCRAPING PAGE {page_number + 1}')
 
-        time.sleep(random.uniform(2.5, 3.5))
+        time.sleep(random.uniform(1.25, 2.5))
 
         url = page_iterator(page_number)
         r = requests.get(url, headers=headers)
@@ -180,11 +180,12 @@ def iterate_pages(curr_time,
             else:
                 page_ads[xpath_key] = [result]
 
-            time.sleep(random.uniform(0.75, 1.5))
+            time.sleep(random.uniform(1.25, 2.25))
 
         store_data(page_ads, folder, curr_time)
 
         next_page = page_iterator(page_number + 1)
 
         if not any(url in next_page for url in all_urls if 'page=' in url):
+            logging.info('NO MORE NEXT PAGE, RETURNING TO MAIN.')
             return
