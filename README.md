@@ -1,4 +1,5 @@
 # About
+** CURRENTLY BROKEN XPATHS (TO BE FIXED) **
 Scraping Finn housing/work ads with Python and requests. **Work in progress**.
 
 Scraping different subdomains within finn *(see parameters.yml)*. E.g. housing ads, project ads,
